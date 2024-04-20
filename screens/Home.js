@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
-import HLine from "../components/HLine"
+import HLine from "../components/HLine";
 
 function SummaryBar(props) {
+  // TODO: probably has to be processed from raw data, we'll see
   const { calories, exercise } = props;
 
   return (
@@ -9,27 +10,63 @@ function SummaryBar(props) {
       <Text style={styles.summaryText}>🔥 {calories} calories burnt</Text>
       <Text style={styles.summaryText}>🕖 {exercise} mins of exercise</Text>
     </View>
-  )
+  );
 }
 
 function Upcoming() {
+  const NoEvents = () => {
+    return (
+      <View style={{ marginTop: 25, marginBottom: 25 }}>
+        <Text style={{ textAlign: "center" }}>No more events for today</Text>
+      </View>
+    )
+  };
+
+  // TODO: check events
+  const Events = () => {
+    return (
+      <View>
+        <NoEvents />
+      </View >
+    )
+  };
+
   return (
     <View>
-      <Text style={{ fontSize: 30 }}>Upcoming</Text>
+      <Text style={styles.bigText}>Upcoming</Text>
+      <Events />
     </View>
-  )
+  );
 }
 
 function CurrentEvent() {
+  const NoEvents = () => {
+    return (
+      <View style={{ marginTop: 25, marginBottom: 25 }}>
+        <Text style={{ textAlign: "center" }}>Nothing going on!</Text>
+      </View>
+    )
+  };
+
+  // TODO: check events
+  const Events = () => {
+    return (
+      <View>
+        <NoEvents />
+      </View >
+    )
+  };
+
   return (
     <View>
-      <Text style={{ fontSize: 30 }}>Current Event</Text>
+      <Text style={styles.bigText}>Current Event</Text>
+      <Events />
     </View>
-  )
+  );
 }
 
 export default function Home() {
-  // TODO calories, exercise
+  // TODO: calories, exercise
   return (
     <View style={styles.container}>
       <View style={{ flex: 0.2 }} />
@@ -47,11 +84,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     flexDirection: "column",
+    justifyContent: "flex-end"
   },
   summaryBar: {
-    flex: 0.5,
+    flex: 0.8,
   },
   summaryText: {
     fontSize: 20,
   },
+  bigText: {
+    textAlign: "center",
+    fontSize: 30,
+  }
 });

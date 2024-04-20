@@ -2,14 +2,12 @@ import { StyleSheet, Text, View } from "react-native";
 import HLine from "../components/HLine"
 
 function SummaryBar(props) {
-  // TODO add fire emote at start of calories
-  // TODO add clock emote at start of exercise
   const { calories, exercise } = props;
 
   return (
     <View style={styles.summaryBar}>
-      <Text style={styles.summaryText}>{calories} calories burnt</Text>
-      <Text style={styles.summaryText}>{exercise} mins of exercise</Text>
+      <Text style={styles.summaryText}>🔥 {calories} calories burnt</Text>
+      <Text style={styles.summaryText}>🕖 {exercise} mins of exercise</Text>
     </View>
   )
 }

@@ -18,6 +18,7 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             android-studio
+            nodejs
           ];
 
           ANDROID_HOME = "/home/yuu/Android/Sdk";

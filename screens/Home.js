@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import HLine from "../components/HLine";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Event from "../data/Storage";
 import Feather from "@expo/vector-icons/Feather";
 import FormatTime from "../utils/Time";
 
@@ -51,10 +50,9 @@ function SummaryBar() {
 
 function Upcoming({ events }) {
   const today = new Date();
-
-  const upcoming = events.filter((event) => {
+  const upcoming = events?.filter((event) => {
     return event.timeStart.getDay() === today.getDay() && event.timeStart > today;
-  });
+  }) ?? [];
 
   const NoEvents = () => {
     return (
@@ -105,12 +103,11 @@ function Upcoming({ events }) {
 
 function CurrentEvent({ events }) {
   // TODO: change this not accept all events. user can cancel, which makes this useless
-  const today = new Date();
-
   // filter events to get current event
-  const currentEvents = events.filter((event) => {
+  const today = new Date();
+  const currentEvents = events?.filter((event) => {
     return event.timeStart.getDay() === today.getDay() && event.timeStart <= today && event.timeEnd >= today;
-  });
+  }) ?? [];
 
   const NoEvents = () => {
     return (
@@ -159,30 +156,7 @@ function CurrentEvent({ events }) {
   );
 }
 
-export default function Home() {
-  // TODO: restore
-  // const [events, setEvents] = useState(null);
-  const [events, setEvents] = useState([
-    new Event(new Date(2024, 3, 22, 15, 40), 60, "Jogging")
-  ]);
-
-  if (events === null) {
-    async function getData() {
-      try {
-        const eventsData = await AsyncStorage.getItem("events");
-        if (eventsData !== null) {
-          setEvents(eventsData);
-        } else {
-          setEvents([]);
-        }
-      } catch (e) {
-        console.error(`Error getting events: ${e}`);
-        setEvents([]);
-      }
-    }
-    getData().then();
-  }
-
+export default function Home({ events }) {
   return (
     <View style={styles.container}>
       <View style={{ flex: 0.2 }} />

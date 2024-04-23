@@ -4,6 +4,7 @@ import HLine from "../components/HLine";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Feather from "@expo/vector-icons/Feather";
 import FormatTime from "../utils/Time";
+import Weather from "../components/Weather";
 
 function SummaryBar() {
   // TODO: make this args
@@ -63,7 +64,6 @@ function Upcoming({ events }) {
   };
 
   // TODO: check events
-  // TODO: weather
   // TODO: clock react to time
   const Events = () => {
     if (upcoming.length > 0) {
@@ -81,7 +81,7 @@ function Upcoming({ events }) {
             {event.activity}
           </Text>
           <Navigation style={styles.upcomingSpace} />
-          <Weather />
+          <Weather event={event} />
         </View>
       )
     } else {
@@ -126,7 +126,7 @@ function CurrentEvent({ currentEvent }) {
             </View>
             <View style={{ justifyContent: "space-evenly" }}>
               <Navigation />
-              <Weather />
+              <Weather event={currentEvent} />
             </View>
           </View>
         </View>
@@ -165,16 +165,6 @@ function Navigation({ style }) {
     <View style={{ ...styles.iconTextContainer, ...style }}>
       <Feather name="map-pin" size={24} color="black" />
       <Text style={{ ...styles.eventText, marginLeft: 5 }}>Navigation</Text>
-    </View>
-  );
-}
-
-function Weather() {
-  // TODO: weather implement
-  return (
-    <View style={styles.iconTextContainer}>
-      <Feather name="cloud" size={24} color="black" />
-      <Text style={{ ...styles.eventText, marginLeft: 5 }}>TODO: weather</Text>
     </View>
   );
 }

@@ -5,6 +5,8 @@ import { StyleSheet, Text, View, Image } from "react-native";
 function FetchWeather(event, setWeatherText, setWeatherIcon) {
   if (event === undefined) return;
 
+  console.log(`Fetching weather data, lat: ${event.lat}, lon: ${event.lon}`);
+
   // NOTE: this only gets the current weather, and i'm not paying a subscription to get future data for this
   // https://openweathermap.org/current
   const apiKey = "54a469c2cfe079178a807216b5b166ca";
@@ -30,17 +32,13 @@ export default function Weather({ event }) {
   const [weatherText, setWeatherText] = useState(undefined);
   const [weatherIcon, setWeatherIcon] = useState(undefined);
 
-  if (weatherText === undefined && event !== undefined) {
-    FetchWeather(event, setWeatherText, setWeatherIcon);
-  }
-
+  // update often enough
   useEffect(() => {
-    const id = setInterval(() => {
-      FetchWeather(event, setWeatherText, setWeatherIcon);
-    }, 60000);
+    FetchWeather(event, setWeatherText, setWeatherIcon);
+    const id = setInterval(FetchWeather, 60000 * 2, event, setWeatherText, setWeatherIcon);
 
     return () => clearInterval(id);
-  });
+  }, [event]);
 
   const WeatherIcon = () => {
     const size = 48;
@@ -50,7 +48,9 @@ export default function Weather({ event }) {
       );
     } else {
       return (
-        <Image source={{ uri: `https://openweathermap.org/img/wn/${weatherIcon}@2x.png` }} style={{ width: size, height: size }} />
+        <View style={{ backgroundColor: "#c6c6c6", borderRadius: 30 }}>
+          <Image source={{ uri: `https://openweathermap.org/img/wn/${weatherIcon}@2x.png` }} style={{ width: size, height: size }} />
+        </View>
       )
     }
   };

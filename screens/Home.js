@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import HLine from "../components/HLine";
 import AsyncStorage from "@react-native-async-storage/async-storage";

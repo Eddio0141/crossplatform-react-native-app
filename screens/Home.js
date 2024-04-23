@@ -7,11 +7,11 @@ import FormatTime from "../utils/Time";
 
 function SummaryBar() {
   // TODO: make this args
-  const [calories, setCalories] = useState(null);
-  const [exercise, setExercise] = useState(null);
+  const [calories, setCalories] = useState(undefined);
+  const [exercise, setExercise] = useState(undefined);
 
   // only read from storage when nessesary
-  if (calories === null) {
+  if (calories === undefined) {
     async function getData() {
       try {
         const caloriesTodayData = await AsyncStorage.getItem("calories-today");
@@ -101,14 +101,7 @@ function Upcoming({ events }) {
   );
 }
 
-function CurrentEvent({ events }) {
-  // TODO: change this not accept all events. user can cancel, which makes this useless
-  // filter events to get current event
-  const today = new Date();
-  const currentEvents = events?.filter((event) => {
-    return event.timeStart.getDay() === today.getDay() && event.timeStart <= today && event.timeEnd >= today;
-  }) ?? [];
-
+function CurrentEvent({ currentEvent }) {
   const NoEvents = () => {
     return (
       <View style={{ marginTop: 25, marginBottom: 25 }}>
@@ -118,8 +111,7 @@ function CurrentEvent({ events }) {
   };
 
   const Events = () => {
-    if (currentEvents.length > 0) {
-      const currentEvent = currentEvents[0];
+    if (currentEvent !== undefined && currentEvent !== null) {
       // TODO: clock react to time
 
       return (
@@ -156,14 +148,14 @@ function CurrentEvent({ events }) {
   );
 }
 
-export default function Home({ events }) {
+export default function Home({ events, currentEvent }) {
   return (
     <View style={styles.container}>
       <View style={{ flex: 0.2 }} />
       <SummaryBar />
       <Upcoming events={events} />
       <HLine />
-      <CurrentEvent events={events} />
+      <CurrentEvent currentEvent={currentEvent} />
     </View >
   );
 }

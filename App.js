@@ -9,35 +9,50 @@ import Weather from "./screens/Weather";
 import Settings from "./screens/Settings";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-async function GetEvents() {
+async function FromStorage(item, fallbackValue = null) {
   try {
-    const eventsData = await AsyncStorage.getItem("events");
-    if (eventsData !== null) {
-      return eventsData;
+    const data = await AsyncStorage.getItem(item);
+    if (data !== null) {
+      return JSON.parse(data);
     }
   } catch (e) {
-    console.error(`Error getting events: ${e}`);
+    console.error(`Error getting ${item}: ${e}`);
   }
-
-  return [];
+  return fallbackValue;
 }
 
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-  const [events, setEvents] = useState(null);
+  const [events, setEvents] = useState(undefined);
+  const [currentEvent, setCurrentEvent] = useState(undefined);
 
-  if (events === null) {
-    GetEvents().then((eventsData) => {
-      console.log("Loaded events from storage")
+  if (events === undefined) {
+    FromStorage("events", []).then((eventsData) => {
+      console.log("Loaded events from storage");
       setEvents(eventsData);
+    });
+  }
+
+  if (currentEvent === undefined) {
+    FromStorage("current-event").then((currentEventData) => {
+      console.log("Loaded current event from storage");
+      // validate
+      if (currentEventData !== null) {
+        const today = new Date();
+        if (currentEventData.timeStart.getDay() === today.getDay() && currentEventData.timeStart < today && currentEventData.timeEnd > today) {
+          setCurrentEvent(currentEventData);
+          return;
+        }
+      }
+      setCurrentEvent(null);
     });
   }
 
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Home" children={() => <Home events={events} />} options={{
+        <Tab.Screen name="Home" children={() => <Home events={events} currentEvent={currentEvent} />} options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
           ),

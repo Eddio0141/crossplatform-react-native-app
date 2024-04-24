@@ -5,22 +5,24 @@ import { StyleSheet, Text, View, Image } from "react-native";
 function FetchWeather(event, setWeatherText, setWeatherIcon) {
   if (event === undefined) return;
 
+  const today = new Date();
+  const hoursFromNow = event.timeStart.getHours() - today.getHours() + 1;
+
   console.log(`Fetching weather data, lat: ${event.lat}, lon: ${event.lon}`);
 
-  // NOTE: this only gets the current weather, and i'm not paying a subscription to get future data for this
-  // https://openweathermap.org/current
+  // https://openweathermap.org/api/hourly-forecast
   const apiKey = "54a469c2cfe079178a807216b5b166ca";
   // TODO: customise temp metric
-  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${event.lat}&lon=${event.lon}&appid=${apiKey}&units=metric`;
+  const url = `https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=${event.lat}&lon=${event.lon}&appid=${apiKey}&cnt=${hoursFromNow}&units=metric`;
 
   fetch(url)
     .then((response) => response.json()).then((data) => {
-      if (data.weather === undefined) return;
+      const weather = data.list[hoursFromNow - 1];
 
-      const desc = data.weather[0].description;
+      const desc = weather.weather[0].description;
       // temp is rounded to nearest whole number
-      const temp = Math.round(data.main.temp);
-      const icon = data.weather[0].icon;
+      const temp = Math.round(weather.main.temp);
+      const icon = weather.weather[0].icon;
 
       setWeatherText(`${desc} (${temp}°C)`);
       setWeatherIcon(icon);

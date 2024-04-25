@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import HLine from "../components/HLine";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Feather from "@expo/vector-icons/Feather";
 import FormatTime from "../utils/Time";
-import Weather from "../components/Weather";
+import { Weather } from "../components/Weather";
 
 function SummaryBar() {
   // TODO: make this args
@@ -51,9 +51,26 @@ function SummaryBar() {
 
 function Upcoming({ events }) {
   const today = new Date();
-  const upcoming = events?.filter((event) => {
-    return event.timeStart.getDay() === today.getDay() && event.timeStart > today;
-  }) ?? [];
+  const [upcoming, setUpcoming] = useState(undefined);
+
+  const filterAndSetUpcoming = () => {
+    const upcomingEvent = events?.find((event) => {
+      return event.timeStart.day === today.getDay() && event.timeStart.timeMoreThanDate(today);
+    }) || null;
+    setUpcoming(upcomingEvent);
+  };
+
+  useEffect(() => {
+    filterAndSetUpcoming();
+    // only update every minute
+    // also, shouldn't just time out since its inaccuracy is bad
+    const id = setInterval(() => {
+      if ((new Date()).getSeconds() === 0) {
+        filterAndSetUpcoming();
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [events]);
 
   const NoEvents = () => {
     return (
@@ -66,22 +83,20 @@ function Upcoming({ events }) {
   // TODO: check events
   // TODO: clock react to time
   const Events = () => {
-    if (upcoming.length > 0) {
-      const event = upcoming[0];
-
+    if (upcoming !== undefined && upcoming !== null) {
       return (
         <View style={{ alignItems: "center" }}>
           <View style={styles.iconTextContainer}>
             <Feather name="clock" size={40} color="black" style={{ alignSelf: "center" }} />
             <Text style={{ fontSize: 17, textAlignVertical: "center", marginLeft: 10 }}>
-              {FormatTime(event.timeStart)} ~ {FormatTime(event.timeEnd)}
+              {FormatTime(upcoming.timeStart)} ~ {FormatTime(upcoming.timeEnd)}
             </Text>
           </View>
           <Text style={{ ...styles.upcomingSpace, fontSize: 18 }}>
-            {event.activity}
+            {upcoming.activity}
           </Text>
           <Navigation style={styles.upcomingSpace} />
-          <Weather event={event} />
+          <Weather event={upcoming} />
         </View>
       )
     } else {

@@ -6,7 +6,12 @@ function FetchWeather(event, setWeatherText, setWeatherIcon) {
   if (event === undefined) return;
 
   const today = new Date();
-  const hoursFromNow = event.timeStart.getHours() - today.getHours() + 1;
+  const hoursFromNow = event.timeStart.hour - today.getHours() + 1;
+
+  if (hoursFromNow < 0) {
+    console.error(`Skipping weather fetch for event, it already passed, hour: ${event.timeStart.hour}, current hour: ${today.getHours()}`);
+    return;
+  }
 
   console.log(`Fetching weather data, lat: ${event.lat}, lon: ${event.lon}`);
 
@@ -30,7 +35,7 @@ function FetchWeather(event, setWeatherText, setWeatherIcon) {
 }
 
 // renders the weather component
-export default function Weather({ event }) {
+function Weather({ event }) {
   const [weatherText, setWeatherText] = useState(undefined);
   const [weatherIcon, setWeatherIcon] = useState(undefined);
 
@@ -42,37 +47,41 @@ export default function Weather({ event }) {
     return () => clearInterval(id);
   }, [event]);
 
-  const WeatherIcon = () => {
-    const size = 48;
-    if (weatherIcon === undefined) {
-      return (
-        <Feather name="cloud" size={size} color="black" />
-      );
-    } else {
-      return (
-        <View style={{ backgroundColor: "#c6c6c6", borderRadius: 30 }}>
-          <Image source={{ uri: `https://openweathermap.org/img/wn/${weatherIcon}@2x.png` }} style={{ width: size, height: size }} />
-        </View>
-      )
-    }
-  };
+  const size = 40;
 
   if (weatherText === undefined) {
     return (
       <View style={styles.iconTextContainer}>
-        <Feather name="cloud" size={24} color="black" />
+        <Feather name="cloud" size={size / 2} color="black" />
         <Text style={{ ...styles.eventText, marginLeft: 5 }}>Unknown</Text>
       </View>
     );
   } else {
     return (
       <View style={styles.iconTextContainer}>
-        <WeatherIcon />
+        <WeatherIcon icon={weatherIcon} size={size} />
         <Text style={{ ...styles.eventText, marginLeft: 5 }}>{weatherText}</Text>
       </View>
     );
   }
 }
+
+function WeatherIcon({ icon, size, viewStyle }) {
+  // fallback
+  if (icon === undefined) {
+    return (
+      <Feather name="cloud" size={size / 2} color="black" />
+    );
+  }
+
+  return (
+    <View style={{ backgroundColor: "#c6c6c6", borderRadius: 30, ...viewStyle }}>
+      <Image source={{ uri: `https://openweathermap.org/img/wn/${icon}@2x.png` }} style={{ width: size, height: size }} />
+    </View>
+  );
+}
+
+export { Weather, WeatherIcon };
 
 const styles = StyleSheet.create({
   iconTextContainer: {

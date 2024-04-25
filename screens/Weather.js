@@ -1,6 +1,9 @@
-import { View, Text, Image } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import * as Location from "expo-location";
 import { useState, useEffect } from "react";
+import FormatTime from "../utils/Time";
+import { WeatherIcon } from "../components/Weather";
+import { firstCharToUpper } from "../utils/String";
 
 export default function Weather({ events }) {
   const [cantGetWeather, setCantGetWeather] = useState(false);
@@ -8,6 +11,8 @@ export default function Weather({ events }) {
   const [mainText, setMainText] = useState(undefined);
   const [mainSubText, setMainSubText] = useState(undefined);
   const [mainSubText2, setMainSubText2] = useState(undefined);
+
+  const [todayEvents, setTodayEvents] = useState([]);
 
   useEffect(() => {
     const weatherUpdate = async () => {
@@ -25,11 +30,14 @@ export default function Weather({ events }) {
 
       console.log(`Fetching weather data, lat: ${latitude}, lon: ${longitude}`);
 
+      const currentHours = new Date().getHours();
+      const hoursTillMidnight = 24 - currentHours;
+
       // https://openweathermap.org/api/hourly-forecast
       // this can be used to obtain current weather data
       const apiKey = "54a469c2cfe079178a807216b5b166ca";
       // TODO: customise temp metric
-      const url = `https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=${latitude}&lon=${longitude}&appid=${apiKey}&cnt=24&units=metric`;
+      const url = `https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=${latitude}&lon=${longitude}&appid=${apiKey}&cnt=${hoursTillMidnight}&units=metric`;
 
       fetch(url).then((response) => response.json()).then((data) => {
         const mainData = data.list[0];
@@ -37,11 +45,34 @@ export default function Weather({ events }) {
         const mainTemp = Math.round(mainData.main.temp);
         const mainTempFeels = Math.round(mainData.main.feels_like);
 
-        setMainText(`${mainDesc} (${mainTemp}°C)`);
+        setMainText(`${firstCharToUpper(mainDesc)} (${mainTemp}°C)`);
         setMainIcon(mainData.weather[0].icon);
         // TODO: metric customisation
         setMainSubText(`Feels like: ${mainTempFeels}°C`);
         setMainSubText2(`Wind speed: ${mainData.wind.speed} m/s`);
+
+        if (events === undefined) return;
+
+        const today = new Date();
+        const todayEvents = events.filter((event) => {
+          return event.timeStart.day === today.getDay() && event.timeStart.timeMoreThanOrEqualDate(today);
+        }).map((event) => {
+          const amPm = event.timeStart.hour < 12 ? "AM" : "PM";
+          const weatherData = data.list[event.timeStart.hour - currentHours];
+
+          return {
+            hour: `${event.timeStart.hour} ${amPm}`,
+            icon: weatherData.weather[0].icon,
+            desc: event.activity,
+            desc2: `${firstCharToUpper(weatherData.weather[0].description)} (${Math.round(weatherData.main.temp)}°C)`,
+            desc3: `Wind speed: ${weatherData.wind.speed} m/s`
+          };
+        });
+
+        // TODO: remove conflicting hours
+        // TODO: add event count
+
+        setTodayEvents(todayEvents);
       });
     };
 
@@ -62,19 +93,39 @@ export default function Weather({ events }) {
     )
   }
 
-  const size = 80;
+  const sizeMain = 80;
+  const sizeEvent = 40;
 
   return (
     <View style={{
       flex: 1, alignItems: "center", flexDirection: "column", justifyContent: "flex-start"
     }}>
       <View style={{ flex: 0.1 }} />
-      <View style={{ backgroundColor: "#c6c6c6", borderRadius: 30, width: size + 2, height: size + 2 }}>
-        <Image source={{ uri: `https://openweathermap.org/img/wn/${mainIcon}@2x.png` }} style={{ width: size, height: size }} />
-      </View>
+      <WeatherIcon icon={mainIcon} viewStyle={{ width: sizeMain + 2, height: sizeMain + 2 }} size={sizeMain} />
       <Text style={{ marginTop: 15, fontSize: 25, fontWeight: "bold" }}>{mainText}</Text>
       <Text style={{ marginTop: 10, fontSize: 15 }}>{mainSubText}</Text>
       <Text style={{ marginTop: 10, fontSize: 15 }}>{mainSubText2}</Text>
+      <ScrollView style={{ marginTop: 30 }}>
+        {
+          todayEvents.map((event, index) => (
+            <View key={index} style={{ flexDirection: "row", justifyContent: "space-evenly", alignItems: "center" }}>
+              <Text style={{ fontSize: 25, marginRight: 15 }}>{event.hour}</Text>
+              <WeatherIcon icon={event.icon} size={sizeEvent} viewStyle={{ width: sizeEvent, height: sizeEvent, marginRight: 15 }} />
+              <View>
+                <Text style={{ fontSize: 18 }}>{event.desc}</Text>
+                <Text>{event.desc2}</Text>
+                <Text>{event.desc3}</Text>
+              </View>
+            </View>
+          ))
+        }
+      </ScrollView>
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  weatherText: {
+    fontSize: 20,
+  }
+});

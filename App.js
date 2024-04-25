@@ -64,7 +64,7 @@ export default function App() {
           ),
           headerShown: false,
         }} />
-        <Tab.Screen name="Weather" component={Weather} options={{
+        <Tab.Screen name="Weather" children={() => <Weather events={events} />} options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="weather-cloudy" color={color} size={size} />
           ),

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import HLine from "../components/HLine";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Feather from "@expo/vector-icons/Feather";
-import FormatTime from "../utils/Time";
+import { FormatTime } from "../utils/Time";
 import { Weather } from "../components/Weather";
 
 function SummaryBar() {
@@ -50,10 +50,10 @@ function SummaryBar() {
 }
 
 function Upcoming({ events }) {
-  const today = new Date();
   const [upcoming, setUpcoming] = useState(undefined);
 
-  const filterAndSetUpcoming = () => {
+  const filterAndSetUpcoming = (events) => {
+    const today = new Date();
     const upcomingEvent = events?.find((event) => {
       return event.timeStart.day === today.getDay() && event.timeStart.timeMoreThanDate(today);
     }) || null;
@@ -61,12 +61,12 @@ function Upcoming({ events }) {
   };
 
   useEffect(() => {
-    filterAndSetUpcoming();
+    filterAndSetUpcoming(events);
     // only update every minute
     // also, shouldn't just time out since its inaccuracy is bad
     const id = setInterval(() => {
       if ((new Date()).getSeconds() === 0) {
-        filterAndSetUpcoming();
+        filterAndSetUpcoming(events);
       }
     }, 1000);
     return () => clearInterval(id);

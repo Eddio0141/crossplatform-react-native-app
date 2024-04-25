@@ -1,9 +1,9 @@
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import * as Location from "expo-location";
 import { useState, useEffect } from "react";
-import FormatTime from "../utils/Time";
 import { WeatherIcon } from "../components/Weather";
 import { firstCharToUpper } from "../utils/String";
+import { FormatTime } from "../utils/Time";
 
 export default function Weather({ events }) {
   const [cantGetWeather, setCantGetWeather] = useState(false);
@@ -57,11 +57,10 @@ export default function Weather({ events }) {
         const todayEvents = events.filter((event) => {
           return event.timeStart.day === today.getDay() && event.timeStart.timeMoreThanOrEqualDate(today);
         }).map((event) => {
-          const amPm = event.timeStart.hour < 12 ? "AM" : "PM";
           const weatherData = data.list[event.timeStart.hour - currentHours];
 
           return {
-            hour: `${event.timeStart.hour} ${amPm}`,
+            hour: FormatTime(event.timeStart),
             icon: weatherData.weather[0].icon,
             desc: event.activity,
             desc2: `${firstCharToUpper(weatherData.weather[0].description)} (${Math.round(weatherData.main.temp)}°C)`,
@@ -69,7 +68,6 @@ export default function Weather({ events }) {
           };
         });
 
-        // TODO: remove conflicting hours
         // TODO: add event count
 
         setTodayEvents(todayEvents);
@@ -78,7 +76,11 @@ export default function Weather({ events }) {
 
     weatherUpdate();
 
-    const id = setInterval(weatherUpdate, 60000 * 2);
+    const id = setInterval(() => {
+      if ((new Date()).getSeconds() === 0) {
+        weatherUpdate();
+      }
+    }, 1000);
 
     return () => clearInterval(id);
   }, [events]);
@@ -96,19 +98,20 @@ export default function Weather({ events }) {
   const sizeMain = 80;
   const sizeEvent = 40;
 
+  // TODO: main icon needs space above i think
   return (
     <View style={{
       flex: 1, alignItems: "center", flexDirection: "column", justifyContent: "flex-start"
     }}>
-      <View style={{ flex: 0.1 }} />
+      <View style={{ height: "5%" }} />
       <WeatherIcon icon={mainIcon} viewStyle={{ width: sizeMain + 2, height: sizeMain + 2 }} size={sizeMain} />
       <Text style={{ marginTop: 15, fontSize: 25, fontWeight: "bold" }}>{mainText}</Text>
       <Text style={{ marginTop: 10, fontSize: 15 }}>{mainSubText}</Text>
       <Text style={{ marginTop: 10, fontSize: 15 }}>{mainSubText2}</Text>
-      <ScrollView style={{ marginTop: 30 }}>
+      <ScrollView style={{ marginTop: 30, width: "100%" }}>
         {
           todayEvents.map((event, index) => (
-            <View key={index} style={{ flexDirection: "row", justifyContent: "space-evenly", alignItems: "center" }}>
+            <View key={index} style={{ flexDirection: "row", justifyContent: "space-evenly", alignItems: "center", marginBottom: 10 }}>
               <Text style={{ fontSize: 25, marginRight: 15 }}>{event.hour}</Text>
               <WeatherIcon icon={event.icon} size={sizeEvent} viewStyle={{ width: sizeEvent, height: sizeEvent, marginRight: 15 }} />
               <View>
@@ -123,9 +126,3 @@ export default function Weather({ events }) {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  weatherText: {
-    fontSize: 20,
-  }
-});

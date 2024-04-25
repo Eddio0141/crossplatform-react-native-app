@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Feather from "@expo/vector-icons/Feather";
 import { FormatTime } from "../utils/Time";
 import { Weather } from "../components/Weather";
+import SharedStyle from "../Style";
 
 function SummaryBar() {
   // TODO: make this args
@@ -165,7 +166,7 @@ function CurrentEvent({ currentEvent }) {
 
 export default function Home({ events, currentEvent }) {
   return (
-    <View style={styles.container}>
+    <View style={{ ...SharedStyle.container, justifyContent: "flex-end" }}>
       <View style={{ flex: 0.2 }} />
       <SummaryBar />
       <Upcoming events={events} />

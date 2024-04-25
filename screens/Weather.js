@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { WeatherIcon } from "../components/Weather";
 import { firstCharToUpper } from "../utils/String";
 import { FormatTime } from "../utils/Time";
+import SharedStyle from "../Style";
 
 export default function Weather({ events }) {
   const [cantGetWeather, setCantGetWeather] = useState(false);
@@ -100,9 +101,7 @@ export default function Weather({ events }) {
 
   // TODO: main icon needs space above i think
   return (
-    <View style={{
-      flex: 1, alignItems: "center", flexDirection: "column", justifyContent: "flex-start"
-    }}>
+    <View style={SharedStyle.container}>
       <View style={{ height: "5%" }} />
       <WeatherIcon icon={mainIcon} viewStyle={{ width: sizeMain + 2, height: sizeMain + 2 }} size={sizeMain} />
       <Text style={{ marginTop: 15, fontSize: 25, fontWeight: "bold" }}>{mainText}</Text>
@@ -123,6 +122,6 @@ export default function Weather({ events }) {
           ))
         }
       </ScrollView>
-    </View>
+    </View >
   )
 }

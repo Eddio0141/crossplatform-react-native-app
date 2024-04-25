@@ -2,8 +2,10 @@ import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { Event, EventTime } from "../models/Event";
 import { FontAwesome6 } from '@expo/vector-icons';
 import SharedStyle from "../Style";
+import ManageActivities from "../screens/ManageActivities";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-export default function Settings({ setEvents }) {
+function SettingsMain({ setEvents, navigation }) {
   const today = new Date();
 
   const Test = () => {
@@ -29,12 +31,26 @@ export default function Settings({ setEvents }) {
   return (
     <View style={SharedStyle.container}>
       <View style={{ flex: 0.1 }} />
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ManageActivities")}>
         <FontAwesome6 name="person-running" size={30} color="black" />
         <Text style={styles.buttonText}>Manage Activities</Text>
       </TouchableOpacity>
       <Test />
     </View >
+  )
+}
+
+const Stack = createNativeStackNavigator();
+
+export default function Settings({ setEvents }) {
+  // HACK: https://reactnavigation.org/docs/hello-react-navigation/#passing-additional-props for args
+  return (
+    <Stack.Navigator initialRouteName="SettingsMain">
+      <Stack.Screen name="SettingsMain" options={{ headerTitle: "Settings" }}>
+        {(props) => <SettingsMain {...props} setEvents={setEvents} />}
+      </Stack.Screen>
+      <Stack.Screen name="ManageActivities" options={{ headerTitle: "Manage Activities" }} component={ManageActivities} />
+    </Stack.Navigator >
   )
 }
 

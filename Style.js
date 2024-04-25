@@ -6,10 +6,10 @@ export default SharedStyle = StyleSheet.create({
     alignItems: "center",
     flexDirection: "column",
     justifyContent: "flex-start",
-    ...SharedStyle.containerLight,
+    backgroundColor: "#efefef" // default
   },
   containerLight: {
-    backgroundColor: "#e5e5e5"
+    backgroundColor: "#efefef"
   },
   containerDark: {
     backgroundColor: "#000"

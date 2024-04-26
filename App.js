@@ -10,6 +10,7 @@ import Weather from "./screens/Weather";
 import Settings from "./screens/Settings";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Reminder from "./screens/Reminder";
+import { SharedEventContext } from "./SharedContext";
 
 async function FromStorage(item, fallbackValue = null) {
   try {
@@ -72,25 +73,29 @@ export default function App() {
         ),
         headerShown: false,
       }} />
-      <Tab.Screen name="Settings" children={(props) => <Settings {...props} events={events} setEvents={setEvents} />} options={{
-        tabBarIcon: ({ color, size }) => (
-          <Feather name="settings" color={color} size={size} />
-        ),
-        headerShown: false,
-      }} />
+      <Tab.Screen name="Settings"
+        children={(props) => <Settings {...props} events={events} setEvents={setEvents} setCurrentEvent={setCurrentEvent} />}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="settings" color={color} size={size} />
+          ),
+          headerShown: false,
+        }} />
     </Tab.Navigator>
   );
 
   return (
-    <NavigationContainer>
-      <RootStack.Navigator>
-        <RootStack.Group>
-          <RootStack.Screen name="Root" component={AppRoot} options={{ headerShown: false }} />
-        </RootStack.Group>
-        <RootStack.Group screenOptions={{ presentation: "modal" }}>
-          <RootStack.Screen name="Reminder" component={Reminder} />
-        </RootStack.Group>
-      </RootStack.Navigator>
-    </NavigationContainer >
+    <SharedEventContext.Provider value={{ currentEvent, setCurrentEvent }}>
+      <NavigationContainer>
+        <RootStack.Navigator>
+          <RootStack.Group>
+            <RootStack.Screen name="Root" component={AppRoot} options={{ headerShown: false }} />
+          </RootStack.Group>
+          <RootStack.Group screenOptions={{ presentation: "modal" }}>
+            <RootStack.Screen name="Reminder" component={Reminder} />
+          </RootStack.Group>
+        </RootStack.Navigator>
+      </NavigationContainer >
+    </SharedEventContext.Provider>
   );
 }

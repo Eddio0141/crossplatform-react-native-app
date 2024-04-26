@@ -5,7 +5,7 @@ import SharedStyle from "../Style";
 import ManageActivities from "../screens/ManageActivities";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-function SettingsMain({ events, setEvents, navigation }) {
+function SettingsMain({ events, setEvents, navigation, setCurrentEvent }) {
   const today = new Date();
 
   const Test = () => {
@@ -44,12 +44,11 @@ function SettingsMain({ events, setEvents, navigation }) {
 
 const Stack = createNativeStackNavigator();
 
-export default function Settings({ events, setEvents }) {
-  // HACK: https://reactnavigation.org/docs/hello-react-navigation/#passing-additional-props for args
+export default function Settings({ events, setEvents, setCurrentEvent }) {
   return (
     <Stack.Navigator initialRouteName="SettingsMain">
       <Stack.Screen name="SettingsMain" options={{ headerTitle: "Settings" }}>
-        {(props) => <SettingsMain {...props} events={events} setEvents={setEvents} />}
+        {(props) => <SettingsMain {...props} events={events} setEvents={setEvents} setCurrentEvent={setCurrentEvent} />}
       </Stack.Screen>
       <Stack.Screen name="ManageActivities" options={{ headerTitle: "Manage Activities" }}>
         {(props) => <ManageActivities {...props} events={events} setEvents={setEvents} />}

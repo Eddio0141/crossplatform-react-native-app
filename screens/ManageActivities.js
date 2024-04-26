@@ -1,11 +1,63 @@
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Button } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Button, Alert } from 'react-native';
 import SharedStyle from '../Style';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FormatTime } from '../utils/Time';
 import HLine from '../components/HLine';
 
-export default function ManagedActivities({ events }) {
+const dayText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+function RenderDay(day, eventsFiltered, lastIndex, index, events, setEvents) {
+  const iconSize = 25;
+  return (
+    <View key={index} style={{ marginLeft: "7%" }}>
+      <Text style={{ fontSize: 25, marginBottom: 15 }}>{dayText[day]}</Text>
+      {
+        // now generate events for each day
+        // TODO: clock icon with real time
+        eventsFiltered.map((event, index) => (
+          <View key={index} style={{ flexDirection: "row", marginBottom: 15 }}>
+            <View style={{ alignSelf: "flex-start" }}>
+              <TouchableOpacity style={{ ...SharedStyle.shadowButton, ...styles.button }}>
+                <FontAwesome6 name="edit" style={styles.buttonFont} size={iconSize} color="black" />
+                <Text>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ ...SharedStyle.shadowButton, ...styles.button }}
+                onPress={() => Alert.alert(
+                  "Confirmation",
+                  "Are you sure you want to remove?",
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "OK", onPress: () => {
+                        const removeIndex = lastIndex + index;
+                        setEvents(events.filter((_, i) => i !== removeIndex));
+                      }
+                    }
+                  ]
+                )}
+              >
+                <FontAwesome6 name="trash" style={styles.buttonFont} size={iconSize} color="black" />
+                <Text>Remove</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={{ alignSelf: "flex-start", alignItems: "center", marginLeft: 20, marginTop: 10 }}>
+              <Text style={{ fontSize: 25, marginBottom: 15 }}>{event.activity}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Feather name="clock" size={iconSize} color="black" style={{ alignSelf: "center", marginRight: 5 }} />
+                <Text style={{ fontSize: 15 }}>{FormatTime(event.timeStart)} to {FormatTime(event.timeEnd)}</Text>
+              </View>
+            </View>
+          </View>
+        ))
+      }
+    </View>
+  );
+}
+
+export default function ManagedActivities({ events, setEvents }) {
+  let lastIndex = 0;
   // TODO: performance can be better by replacing scrollview
   return (
     <View style={{ ...SharedStyle.container, alignSelf: "flex-start", width: "100%" }}>
@@ -17,47 +69,21 @@ export default function ManagedActivities({ events }) {
         <View style={styles.scrollPad} />
         {
           // iterator for 7 days
-          [...Array(7).keys()].map((day) => {
-            const eventsFiltered = events?.filter((event) => event.timeStart.day === day) ?? [];
-            return {
-              day: day,
-              events: eventsFiltered
-            };
-          }).filter((day) => day.events.length > 0)
-            .map((day, index) => {
-              const dayText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-              const iconSize = 25;
-              return (
-                <View key={index} style={{ marginLeft: "7%" }}>
-                  <Text style={{ fontSize: 25, marginBottom: 15 }}>{dayText[day.day]}</Text>
-                  {
-                    // now generate events for each day
-                    // TODO: clock icon with real time
-                    day.events.map((event, index) => (
-                      <View key={index} style={{ flexDirection: "row", marginBottom: 15 }}>
-                        <View style={{ alignSelf: "flex-start" }}>
-                          <TouchableOpacity style={{ ...SharedStyle.shadowButton, ...styles.button }}>
-                            <FontAwesome6 name="edit" style={styles.buttonFont} size={iconSize} color="black" />
-                            <Text>Edit</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity style={{ ...SharedStyle.shadowButton, ...styles.button }}>
-                            <FontAwesome6 name="trash" style={styles.buttonFont} size={iconSize} color="black" />
-                            <Text>Remove</Text>
-                          </TouchableOpacity>
-                        </View>
-                        <View style={{ alignSelf: "flex-start", alignItems: "center", marginLeft: 20, marginTop: 10 }}>
-                          <Text style={{ fontSize: 25, marginBottom: 15 }}>{event.activity}</Text>
-                          <View style={{ flexDirection: "row", alignItems: "center" }}>
-                            <Feather name="clock" size={iconSize} color="black" style={{ alignSelf: "center", marginRight: 5 }} />
-                            <Text style={{ fontSize: 15 }}>{FormatTime(event.timeStart)} to {FormatTime(event.timeEnd)}</Text>
-                          </View>
-                        </View>
-                      </View>
-                    ))
-                  }
-                </View>
-              );
+          [...Array(7).keys()]
+            .map((day) => {
+              const eventsFiltered = events?.filter((event) => event.timeStart.day === day) ?? [];
+              const returnObj = {
+                day: day,
+                eventsFiltered: eventsFiltered,
+                lastIndex: lastIndex
+              };
+
+              lastIndex += eventsFiltered.length;
+
+              return returnObj;
             })
+            .filter(({ eventsFiltered }) => eventsFiltered.length > 0)
+            .map(({ day, eventsFiltered, lastIndex }, index) => RenderDay(day, eventsFiltered, lastIndex, index, events, setEvents))
         }
       </ScrollView>
     </View>

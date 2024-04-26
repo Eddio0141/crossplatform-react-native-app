@@ -20,6 +20,7 @@ function SettingsMain({ setEvents, navigation }) {
           new Event(new EventTime(today.getDay(), today.getHours() + 1, 50), 60, "Jogging 6", 53.22659880937626, -0.5421307970516260),
           new Event(new EventTime(today.getDay(), today.getHours() + 2, 0), 60, "Jogging 7", 53.22659880937626, -0.5421307970516260),
           new Event(new EventTime(today.getDay(), today.getHours() + 2, 10), 60, "Jogging 8", 53.22659880937626, -0.5421307970516260),
+          new Event(new EventTime(today.getDay() + 1 > 6 ? 0 : today.getDay() + 1, today.getHours(), today.getMinutes()), 60, "Jogging 9", 53.22659880937626, -0.5421307970516260),
         ]);
         console.log("test pressed");
       }}>
@@ -50,7 +51,7 @@ export default function Settings({ events, setEvents }) {
         {(props) => <SettingsMain {...props} setEvents={setEvents} />}
       </Stack.Screen>
       <Stack.Screen name="ManageActivities" options={{ headerTitle: "Manage Activities" }}>
-        {(props) => <ManageActivities {...props} events={events} />}
+        {(props) => <ManageActivities {...props} events={events} setEvents={setEvents} />}
       </Stack.Screen>
     </Stack.Navigator >
   )

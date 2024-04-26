@@ -8,8 +8,8 @@ function FetchWeather(event, setWeatherText, setWeatherIcon) {
   const today = new Date();
   const hoursFromNow = event.timeStart.hour - today.getHours() + 1;
 
-  if (hoursFromNow < 0) {
-    console.error(`Skipping weather fetch for event, it already passed, hour: ${event.timeStart.hour}, current hour: ${today.getHours()}`);
+  if (hoursFromNow < 1) {
+    console.info(`Skipping weather fetch for event, it already passed, hour: ${event.timeStart.hour}, current hour: ${today.getHours()}`);
     return;
   }
 

@@ -1,11 +1,11 @@
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Button } from "react-native";
 import { Event, EventTime } from "../models/Event";
 import { FontAwesome6 } from '@expo/vector-icons';
 import SharedStyle from "../Style";
 import ManageActivities from "../screens/ManageActivities";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-function SettingsMain({ setEvents, navigation }) {
+function SettingsMain({ events, setEvents, navigation }) {
   const today = new Date();
 
   const Test = () => {
@@ -37,6 +37,7 @@ function SettingsMain({ setEvents, navigation }) {
         <Text style={styles.buttonText}>Manage Activities</Text>
       </TouchableOpacity>
       <Test />
+      <Button title="test2" onPress={() => navigation.navigate("Reminder", { event: events[0] })} />
     </View >
   )
 }
@@ -48,7 +49,7 @@ export default function Settings({ events, setEvents }) {
   return (
     <Stack.Navigator initialRouteName="SettingsMain">
       <Stack.Screen name="SettingsMain" options={{ headerTitle: "Settings" }}>
-        {(props) => <SettingsMain {...props} setEvents={setEvents} />}
+        {(props) => <SettingsMain {...props} events={events} setEvents={setEvents} />}
       </Stack.Screen>
       <Stack.Screen name="ManageActivities" options={{ headerTitle: "Manage Activities" }}>
         {(props) => <ManageActivities {...props} events={events} setEvents={setEvents} />}

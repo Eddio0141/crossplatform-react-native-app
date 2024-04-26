@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
   eventText: {
     fontSize: 16,
     textAlignVertical: "center",
+    textAlign: "center",
   },
   upcomingSpace: {
     marginBottom: 10,

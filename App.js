@@ -70,7 +70,7 @@ export default function App() {
           ),
           headerShown: false,
         }} />
-        <Tab.Screen name="Settings" children={() => <Settings setEvents={setEvents} />} options={{
+        <Tab.Screen name="Settings" children={() => <Settings events={events} setEvents={setEvents} />} options={{
           tabBarIcon: ({ color, size }) => (
             <Feather name="settings" color={color} size={size} />
           ),

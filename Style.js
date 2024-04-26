@@ -14,4 +14,20 @@ export default SharedStyle = StyleSheet.create({
   containerDark: {
     backgroundColor: "#000"
   },
+  shadowButton: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    backgroundColor: "white",
+
+    // shadow
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  }
 });

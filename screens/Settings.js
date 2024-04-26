@@ -10,7 +10,7 @@ function SettingsMain({ setEvents, navigation }) {
 
   const Test = () => {
     return (
-      <TouchableOpacity title="test" style={styles.button} onPress={() => {
+      <TouchableOpacity title="test" style={{ ...SharedStyle.shadowButton, ...styles.button }} onPress={() => {
         setEvents([
           new Event(new EventTime(today.getDay(), today.getHours(), 35), 60, "Jogging", 53.22659880937626, -0.5421307970516260),
           new Event(new EventTime(today.getDay(), today.getHours() + 1, 10), 60, "Jogging 2", 53.22659880937626, -0.5421307970516260),
@@ -31,7 +31,7 @@ function SettingsMain({ setEvents, navigation }) {
   return (
     <View style={SharedStyle.container}>
       <View style={{ flex: 0.1 }} />
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ManageActivities")}>
+      <TouchableOpacity style={{ ...SharedStyle.shadowButton, ...styles.button }} onPress={() => navigation.navigate("ManageActivities")}>
         <FontAwesome6 name="person-running" size={30} color="black" />
         <Text style={styles.buttonText}>Manage Activities</Text>
       </TouchableOpacity>
@@ -42,14 +42,16 @@ function SettingsMain({ setEvents, navigation }) {
 
 const Stack = createNativeStackNavigator();
 
-export default function Settings({ setEvents }) {
+export default function Settings({ events, setEvents }) {
   // HACK: https://reactnavigation.org/docs/hello-react-navigation/#passing-additional-props for args
   return (
     <Stack.Navigator initialRouteName="SettingsMain">
       <Stack.Screen name="SettingsMain" options={{ headerTitle: "Settings" }}>
         {(props) => <SettingsMain {...props} setEvents={setEvents} />}
       </Stack.Screen>
-      <Stack.Screen name="ManageActivities" options={{ headerTitle: "Manage Activities" }} component={ManageActivities} />
+      <Stack.Screen name="ManageActivities" options={{ headerTitle: "Manage Activities" }}>
+        {(props) => <ManageActivities {...props} events={events} />}
+      </Stack.Screen>
     </Stack.Navigator >
   )
 }
@@ -57,22 +59,8 @@ export default function Settings({ setEvents }) {
 const styles = StyleSheet.create({
   button: {
     borderRadius: 20,
-    width: "100%",
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    backgroundColor: "white",
     marginBottom: 15,
-
-    // shadow
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    width: "100%",
   },
   buttonText: {
     fontSize: 20,

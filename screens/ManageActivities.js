@@ -1,12 +1,18 @@
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Button } from 'react-native';
 import SharedStyle from '../Style';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FormatTime } from '../utils/Time';
+import HLine from '../components/HLine';
 
 export default function ManagedActivities({ events }) {
+  // TODO: performance can be better by replacing scrollview
   return (
     <View style={{ ...SharedStyle.container, alignSelf: "flex-start", width: "100%" }}>
+      <View style={{ marginBottom: 7 }} />
+      <Button title="Add Activity" onPress={() => console.log("Add Activity")} />
+      <View style={{ marginBottom: 5 }} />
+      <HLine />
       <ScrollView style={{ width: "100%" }}>
         <View style={styles.scrollPad} />
         {
@@ -53,10 +59,10 @@ export default function ManagedActivities({ events }) {
               );
             })
         }
-        <View style={styles.scrollPad} />
       </ScrollView>
     </View>
   )
+  // TODO: add activity
 }
 
 const styles = StyleSheet.create({

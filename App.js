@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -8,27 +8,17 @@ import Home from "./screens/Home";
 import Calendar from "./screens/Calendar";
 import Weather from "./screens/Weather";
 import Settings from "./screens/Settings";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Reminder from "./screens/Reminder";
-import { SharedEventContext } from "./SharedContext";
-
-async function FromStorage(item, fallbackValue = null) {
-  try {
-    const data = await AsyncStorage.getItem(item);
-    if (data !== null) {
-      return JSON.parse(data);
-    }
-  } catch (e) {
-    console.error(`Error getting ${item}: ${e}`);
-  }
-  return fallbackValue;
-}
+import { SharedContext } from "./SharedContext";
+import { FromStorage } from "./utils/Storage";
+import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
 
 export default function App() {
   const [events, setEvents] = useState(undefined);
+  const [todayEvents, setTodayEvents] = useState(undefined);
   const [currentEvent, setCurrentEvent] = useState(undefined);
 
   if (events === undefined) {
@@ -36,6 +26,10 @@ export default function App() {
       console.log("Loaded events from storage");
       setEvents(eventsData);
     });
+  }
+
+  if (todayEvents === undefined) {
+    LoadEventsFromStorage(todayEvents, setTodayEvents, events);
   }
 
   if (currentEvent === undefined) {
@@ -52,6 +46,21 @@ export default function App() {
       setCurrentEvent(null);
     });
   }
+
+  // handle resetting today events at midnight
+  useEffect(() => {
+    UpdateTodayEvents(todayEvents, setTodayEvents, events);
+
+    const id = setInterval(() => {
+      if (todayEvents?.date === null || todayEvents?.date === undefined) return;
+      const today = new Date();
+      if (today.getHours() === 0 && today.getMinutes() === 0 && today.getSeconds() === 0) {
+        UpdateTodayEvents(todayEvents, setTodayEvents, events);
+      }
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [events]);
 
   const AppRoot = () => (
     <Tab.Navigator>
@@ -85,7 +94,7 @@ export default function App() {
   );
 
   return (
-    <SharedEventContext.Provider value={{ currentEvent, setCurrentEvent }}>
+    <SharedContext.Provider value={{ currentEvent, setCurrentEvent, todayEvents, setTodayEvents }}>
       <NavigationContainer>
         <RootStack.Navigator>
           <RootStack.Group>
@@ -96,6 +105,6 @@ export default function App() {
           </RootStack.Group>
         </RootStack.Navigator>
       </NavigationContainer >
-    </SharedEventContext.Provider>
+    </SharedContext.Provider>
   );
 }

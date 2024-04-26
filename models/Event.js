@@ -1,3 +1,5 @@
+import uuid from 'react-native-uuid';
+
 class Event {
   // (day: number, timeStart: EventTime, duration: number (minutes), activity: string, lat: number, lon: number)
   constructor(timeStart, duration, activity, lat, lon) {
@@ -6,6 +8,11 @@ class Event {
     this.activity = activity;
     this.lat = lat;
     this.lon = lon;
+    this.uuid = uuid.v4();
+  }
+
+  equals(other) {
+    return this.uuid === other.uuid;
   }
 }
 
@@ -49,10 +56,6 @@ class EventTime {
 
   timeMoreThanOrEqualDate(other) {
     return this.timeMoreThanDate(other) || this.timeEqualDate(other);
-  }
-
-  equals(other) {
-    return this.day === other.day && this.hour === other.hour && this.minute === other.minute;
   }
 }
 

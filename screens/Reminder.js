@@ -3,11 +3,12 @@ import Feather from "@expo/vector-icons/Feather";
 import { FormatTime } from "../utils/Time";
 import { Weather } from "../components/Weather";
 import { useContext } from "react";
-import { SharedEventContext } from "../SharedContext";
+import { SharedContext } from "../SharedContext";
+import { FilterIndex } from "../utils/Array";
 
-export default function Reminder({ navigation, route }) {
-  const { event } = route.params;
-  const { setCurrentEvent } = useContext(SharedEventContext);
+export default function Reminder({ navigation }) {
+  const { todayEvents, setTodayEvents, setCurrentEvent } = useContext(SharedContext);
+  const { event } = todayEvents.events[0];
 
   // TODO: clock react to time
   return (
@@ -21,13 +22,29 @@ export default function Reminder({ navigation, route }) {
       <Weather event={event} />
       <View style={{ marginBottom: 35 }} />
       <View style={{ flexDirection: "row", justifyContent: "space-around", width: "70%" }}>
-        <Button onPress={() => navigation.goBack()} title="Cancel" />
+        <Button onPress={() => {
+          // TODO: alert, are you sure you want to cancel?
+          let cancelled = todayEventsCancelled.cancelled;
+          cancelled.push(todayEvents.events[0]);
+          const events = FilterIndex(todayEvents.events, 0);
+          const date = todayEvents.date;
+          setTodayEvents({ date, events, cancelled });
+          return navigation.goBack();
+        }} title="Cancel" />
         <Button onPress={() => {
           // make sure event is still valid
-          if (event.timeStart.day === (new Date()).getDay() && event.timeEnd.timeMoreThanDate(new Date())) {
-            console.log("Reminder: event is now active");
-            setCurrentEvent(event);
+          if (event.timeStart.day !== (new Date()).getDay() || event.timeEnd.timeLessThanDate(new Date())) {
+            // TODO: alert, event is no longer valid
+            return;
           }
+
+          console.log("Reminder: event is now active");
+          setCurrentEvent(event);
+          // TODO: save to storage
+
+          setTodayEvents(FilterIndex(todayEvents, 0));
+
+          // TODO: also save to storage
         }} title="Start" />
       </View>
     </View>

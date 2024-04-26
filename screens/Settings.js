@@ -10,22 +10,26 @@ function SettingsMain({ events, setEvents, navigation, setCurrentEvent }) {
 
   const Test = () => {
     return (
-      <TouchableOpacity title="test" style={{ ...SharedStyle.shadowButton, ...styles.button }} onPress={() => {
-        setEvents([
-          new Event(new EventTime(today.getDay(), today.getHours(), 35), 60, "Jogging", 53.22659880937626, -0.5421307970516260),
-          new Event(new EventTime(today.getDay(), today.getHours() + 1, 10), 60, "Jogging 2", 53.22659880937626, -0.5421307970516260),
-          new Event(new EventTime(today.getDay(), today.getHours() + 1, 20), 60, "Jogging 3", 53.22659880937626, -0.5421307970516260),
-          new Event(new EventTime(today.getDay(), today.getHours() + 1, 30), 60, "Jogging 4", 53.22659880937626, -0.5421307970516260),
-          new Event(new EventTime(today.getDay(), today.getHours() + 1, 40), 60, "Jogging 5", 53.22659880937626, -0.5421307970516260),
-          new Event(new EventTime(today.getDay(), today.getHours() + 1, 50), 60, "Jogging 6", 53.22659880937626, -0.5421307970516260),
-          new Event(new EventTime(today.getDay(), today.getHours() + 2, 0), 60, "Jogging 7", 53.22659880937626, -0.5421307970516260),
-          new Event(new EventTime(today.getDay(), today.getHours() + 2, 10), 60, "Jogging 8", 53.22659880937626, -0.5421307970516260),
-          new Event(new EventTime(today.getDay() + 1 > 6 ? 0 : today.getDay() + 1, today.getHours(), today.getMinutes()), 60, "Jogging 9", 53.22659880937626, -0.5421307970516260),
-        ]);
-        console.log("test pressed");
-      }}>
-        <Text style={styles.buttonText}>Test</Text>
-      </TouchableOpacity>
+      <View>
+        <Button title="test" onPress={() => {
+          setEvents([
+            new Event(new EventTime(today.getDay(), today.getHours(), 35), 60, "Jogging", 53.22659880937626, -0.5421307970516260),
+            new Event(new EventTime(today.getDay(), today.getHours() + 1, 10), 60, "Jogging 2", 53.22659880937626, -0.5421307970516260),
+            new Event(new EventTime(today.getDay(), today.getHours() + 1, 20), 60, "Jogging 3", 53.22659880937626, -0.5421307970516260),
+            new Event(new EventTime(today.getDay(), today.getHours() + 1, 30), 60, "Jogging 4", 53.22659880937626, -0.5421307970516260),
+            new Event(new EventTime(today.getDay(), today.getHours() + 1, 40), 60, "Jogging 5", 53.22659880937626, -0.5421307970516260),
+            new Event(new EventTime(today.getDay(), today.getHours() + 1, 50), 60, "Jogging 6", 53.22659880937626, -0.5421307970516260),
+            new Event(new EventTime(today.getDay(), today.getHours() + 2, 0), 60, "Jogging 7", 53.22659880937626, -0.5421307970516260),
+            new Event(new EventTime(today.getDay(), today.getHours() + 2, 10), 60, "Jogging 8", 53.22659880937626, -0.5421307970516260),
+            new Event(new EventTime(today.getDay() + 1 > 6 ? 0 : today.getDay() + 1, today.getHours(), today.getMinutes()), 60, "Jogging 9", 53.22659880937626, -0.5421307970516260),
+          ]);
+          console.log("test pressed");
+        }} />
+        <Button title="clear storage" onPress={() => {
+          setEvents([]);
+        }} />
+        <Button title="test2" onPress={() => navigation.navigate("Reminder")} />
+      </View>
     );
   };
 
@@ -37,7 +41,6 @@ function SettingsMain({ events, setEvents, navigation, setCurrentEvent }) {
         <Text style={styles.buttonText}>Manage Activities</Text>
       </TouchableOpacity>
       <Test />
-      <Button title="test2" onPress={() => navigation.navigate("Reminder", { event: events[0] })} />
     </View >
   )
 }

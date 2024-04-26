@@ -1,5 +1,5 @@
 import { createContext } from "react";
 
-const SharedEventContext = createContext();
+const SharedContext = createContext();
 
-export { SharedEventContext };
+export { SharedContext };

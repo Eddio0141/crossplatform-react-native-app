@@ -64,7 +64,7 @@ export default function App() {
 
   const AppRoot = () => (
     <Tab.Navigator>
-      <Tab.Screen name="Home" children={() => <Home events={events} currentEvent={currentEvent} />} options={{
+      <Tab.Screen name="Home" children={() => <Home currentEvent={currentEvent} />} options={{
         tabBarIcon: ({ color, size }) => (
           <MaterialCommunityIcons name="home" color={color} size={size} />
         ),
@@ -76,7 +76,7 @@ export default function App() {
         ),
         headerShown: false,
       }} />
-      <Tab.Screen name="Weather" children={() => <Weather events={events} />} options={{
+      <Tab.Screen name="Weather" component={Weather} options={{
         tabBarIcon: ({ color, size }) => (
           <MaterialCommunityIcons name="weather-cloudy" color={color} size={size} />
         ),

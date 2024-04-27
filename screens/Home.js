@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import HLine from "../components/HLine";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -6,6 +6,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { FormatTime } from "../utils/Time";
 import { Weather } from "../components/Weather";
 import SharedStyle from "../Style";
+import { SharedContext } from "../SharedContext";
 
 function SummaryBar() {
   // TODO: make this args
@@ -50,63 +51,39 @@ function SummaryBar() {
   );
 }
 
-function Upcoming({ events }) {
-  const [upcoming, setUpcoming] = useState(undefined);
+function Upcoming() {
+  const { todayEvents } = useContext(SharedContext);
 
-  const filterAndSetUpcoming = (events) => {
-    const today = new Date();
-    const upcomingEvent = events?.find((event) => {
-      return event.timeStart.day === today.getDay() && event.timeStart.timeMoreThanDate(today);
-    }) || null;
-    setUpcoming(upcomingEvent);
-  };
-
-  useEffect(() => {
-    filterAndSetUpcoming(events);
-    // only update every minute
-    // also, shouldn't just time out since its inaccuracy is bad
-    const id = setInterval(() => {
-      if ((new Date()).getSeconds() === 0) {
-        filterAndSetUpcoming(events);
+  // TODO: check events
+  // TODO: clock react to time
+  // BUG: fix this shit
+  const Events = () => {
+    if (todayEvents?.events !== undefined) {
+      const upcoming = todayEvents.events[0];
+      if (upcoming !== undefined) {
+        return (
+          <View style={{ alignItems: "center" }}>
+            <View style={styles.iconTextContainer}>
+              <Feather name="clock" size={40} color="black" style={{ alignSelf: "center" }} />
+              <Text style={{ fontSize: 17, textAlignVertical: "center", marginLeft: 10 }}>
+                {FormatTime(upcoming.timeStart)} ~ {FormatTime(upcoming.timeEnd)}
+              </Text>
+            </View>
+            <Text style={{ ...styles.upcomingSpace, fontSize: 18 }}>
+              {upcoming.activity}
+            </Text>
+            <Navigation style={styles.upcomingSpace} />
+            <Weather event={upcoming} />
+          </View>
+        )
       }
-    }, 1000);
-    return () => clearInterval(id);
-  }, [events]);
+    }
 
-  const NoEvents = () => {
     return (
       <View style={{ marginTop: 25, marginBottom: 25 }}>
         <Text style={{ textAlign: "center" }}>No more events for today</Text>
       </View>
     )
-  };
-
-  // TODO: check events
-  // TODO: clock react to time
-  const Events = () => {
-    if (upcoming !== undefined && upcoming !== null) {
-      return (
-        <View style={{ alignItems: "center" }}>
-          <View style={styles.iconTextContainer}>
-            <Feather name="clock" size={40} color="black" style={{ alignSelf: "center" }} />
-            <Text style={{ fontSize: 17, textAlignVertical: "center", marginLeft: 10 }}>
-              {FormatTime(upcoming.timeStart)} ~ {FormatTime(upcoming.timeEnd)}
-            </Text>
-          </View>
-          <Text style={{ ...styles.upcomingSpace, fontSize: 18 }}>
-            {upcoming.activity}
-          </Text>
-          <Navigation style={styles.upcomingSpace} />
-          <Weather event={upcoming} />
-        </View>
-      )
-    } else {
-      return (
-        <View>
-          <NoEvents />
-        </View >
-      )
-    }
   };
 
   return (
@@ -164,12 +141,12 @@ function CurrentEvent({ currentEvent }) {
   );
 }
 
-export default function Home({ events, currentEvent }) {
+export default function Home({ currentEvent }) {
   return (
     <View style={{ ...SharedStyle.container, justifyContent: "flex-end" }}>
       <View style={{ flex: 0.2 }} />
       <SummaryBar />
-      <Upcoming events={events} />
+      <Upcoming />
       <HLine />
       <CurrentEvent currentEvent={currentEvent} />
     </View >

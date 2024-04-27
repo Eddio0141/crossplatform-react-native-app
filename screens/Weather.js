@@ -1,19 +1,21 @@
 import { View, Text, ScrollView } from "react-native";
 import * as Location from "expo-location";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { WeatherIcon } from "../components/Weather";
 import { firstCharToUpper } from "../utils/String";
 import { FormatTime } from "../utils/Time";
 import SharedStyle from "../Style";
+import { SharedContext } from "../SharedContext";
 
-export default function Weather({ events }) {
+export default function Weather() {
   const [cantGetWeather, setCantGetWeather] = useState(false);
   const [mainIcon, setMainIcon] = useState(undefined);
   const [mainText, setMainText] = useState(undefined);
   const [mainSubText, setMainSubText] = useState(undefined);
   const [mainSubText2, setMainSubText2] = useState(undefined);
+  const [todayWeatherEvents, setTodayWeatherEvents] = useState([]);
 
-  const [todayEvents, setTodayEvents] = useState([]);
+  const { todayEvents } = useContext(SharedContext);
 
   useEffect(() => {
     const weatherUpdate = async () => {
@@ -52,12 +54,9 @@ export default function Weather({ events }) {
         setMainSubText(`Feels like: ${mainTempFeels}°C`);
         setMainSubText2(`Wind speed: ${mainData.wind.speed} m/s`);
 
-        if (events === undefined) return;
+        if (todayEvents === undefined) return;
 
-        const today = new Date();
-        const todayEvents = events.filter((event) => {
-          return event.timeStart.day === today.getDay() && event.timeStart.timeMoreThanOrEqualDate(today);
-        }).map((event) => {
+        const weatherEvents = todayEvents.events.map((event) => {
           const weatherData = data.list[event.timeStart.hour - currentHours];
 
           return {
@@ -69,9 +68,7 @@ export default function Weather({ events }) {
           };
         });
 
-        // TODO: add event count
-
-        setTodayEvents(todayEvents);
+        setTodayWeatherEvents(weatherEvents);
       });
     };
 
@@ -84,7 +81,7 @@ export default function Weather({ events }) {
     }, 1000);
 
     return () => clearInterval(id);
-  }, [events]);
+  }, [todayEvents]);
 
   if (cantGetWeather) {
     console.error("Unable to get weather data");
@@ -109,7 +106,7 @@ export default function Weather({ events }) {
       <Text style={{ marginTop: 10, fontSize: 15 }}>{mainSubText2}</Text>
       <ScrollView style={{ marginTop: 30, width: "100%" }}>
         {
-          todayEvents.map((event, index) => (
+          todayWeatherEvents.map((event, index) => (
             <View key={index} style={{ flexDirection: "row", justifyContent: "space-evenly", alignItems: "center", marginBottom: 10 }}>
               <Text style={{ fontSize: 25, marginRight: 15 }}>{event.hour}</Text>
               <WeatherIcon icon={event.icon} size={sizeEvent} viewStyle={{ width: sizeEvent, height: sizeEvent, marginRight: 15 }} />

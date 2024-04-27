@@ -16,8 +16,9 @@ function UpdateTodayEvents(todayEvents, setTodayEvents, events) {
     }
   }
   // TODO: test cancellation then modify events, and see if cancelled event comes up that has timeStart before current
-  setTodayEvents(filtered);
-  TodayEventsToStorage({ date: today, events: filtered, cancelled });
+  const newToday = { date: today, events: filtered, cancelled };
+  setTodayEvents(newToday);
+  TodayEventsToStorage(newToday);
   console.log(`Updated today events: ${filtered.length}`);
 }
 
@@ -29,7 +30,7 @@ function LoadEventsFromStorage(todayEvents, setTodayEvents, events) {
   FromStorage(TodayEventsKey).then((todayEventsData) => {
     const data = { ...todayEventsData, date: new Date(todayEventsData.date) };
 
-    console.log(`Loaded today events from storage, count: ${data.events.length}`);
+    console.log(`Loaded today events from storage, count: ${todayEventsData}`);
     // make sure date is the same
     if (todayEventsData === null || !DateEqualsWithoutTime(data.date, new Date())) {
       // invalidate

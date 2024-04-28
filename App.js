@@ -13,6 +13,15 @@ import { SharedContext } from "./SharedContext";
 import { FromStorage } from "./utils/Storage";
 import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();

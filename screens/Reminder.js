@@ -5,10 +5,24 @@ import { Weather } from "../components/Weather";
 import { useContext } from "react";
 import { SharedContext } from "../SharedContext";
 import { FilterIndex } from "../utils/Array";
+import * as Notifications from "expo-notifications";
 
 export default function Reminder({ navigation }) {
   const { todayEvents, setTodayEvents, setCurrentEvent, setReminderShow } = useContext(SharedContext);
   const event = todayEvents.events[0];
+
+  if (event !== undefined) {
+    (async () => {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Exercise Reminder!",
+          body: `${event.activity}, starting from ${FormatTime(event.timeStart)} to ${FormatTime(event.timeEnd)}`,
+        },
+        trigger: null,
+      });
+    })();
+  }
+
   // TODO: check if same date, handle midnight reset
 
   // TODO: clock react to time

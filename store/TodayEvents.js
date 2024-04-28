@@ -28,9 +28,10 @@ function TodayEventsToStorage(todayEvents) {
 
 function LoadEventsFromStorage(todayEvents, setTodayEvents, events) {
   FromStorage(TodayEventsKey).then((todayEventsData) => {
-    const data = { ...todayEventsData, date: new Date(todayEventsData.date) };
+    const date = todayEventsData === null ? undefined : new Date(todayEventsData.date);
+    const data = { ...todayEventsData, date };
 
-    console.log(`Loaded today events from storage, count: ${todayEventsData}`);
+    console.log(`Loaded today events from storage, data: ${todayEventsData}`);
     // make sure date is the same
     if (todayEventsData === null || !DateEqualsWithoutTime(data.date, new Date())) {
       // invalidate

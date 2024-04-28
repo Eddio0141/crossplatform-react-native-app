@@ -9,6 +9,7 @@ import Calendar from "./screens/Calendar";
 import Weather from "./screens/Weather";
 import Settings from "./screens/Settings";
 import Reminder from "./screens/Reminder";
+import Activity from "./screens/Activity";
 import { SharedContext } from "./SharedContext";
 import { FromStorage } from "./utils/Storage";
 import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
@@ -112,6 +113,12 @@ export default function App() {
         <Tab.Screen name="Calendar" component={Calendar} options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="calendar" color={color} size={size} />
+          ),
+          headerShown: false,
+        }} />
+        <Tab.Screen name="Activity" component={Activity} options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="run" color={color} size={size} />
           ),
           headerShown: false,
         }} />

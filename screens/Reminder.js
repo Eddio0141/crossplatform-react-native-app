@@ -58,7 +58,8 @@ export default function Reminder({ navigation }) {
           setCurrentEvent(event);
           // TODO: save to storage
 
-          setTodayEvents(FilterIndex(todayEvents, 0));
+          const events = FilterIndex(todayEvents.events, 0);
+          setTodayEvents({ ...todayEvents, events });
           setReminderShow(false);
 
           // TODO: also save to storage

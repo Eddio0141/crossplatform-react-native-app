@@ -60,6 +60,15 @@ class EventTime {
   timeMoreThanOrEqualDate(other) {
     return this.timeMoreThanDate(other) || this.timeEqualDate(other);
   }
+
+  secondsTillDate() {
+    const timeNow = new Date();
+    const timeEnd = new Date(timeNow.getFullYear(), timeNow.getMonth(), timeNow.getDate(), this.hour, this.minute);
+    if (timeEnd < timeNow) {
+      timeEnd.setDate(timeEnd.getDate() + 1);
+    }
+    return timeEnd.getTime() - timeNow.getTime();
+  }
 }
 
 export { EventTime, Event };

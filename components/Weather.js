@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { StyleSheet, Text, View, Image } from "react-native";
+import { firstCharToUpper } from "../utils/String";
 
 function FetchWeather(event, setWeatherText, setWeatherIcon) {
   if (event === undefined) return;
@@ -29,7 +30,7 @@ function FetchWeather(event, setWeatherText, setWeatherIcon) {
       const temp = Math.round(weather.main.temp);
       const icon = weather.weather[0].icon;
 
-      setWeatherText(`${desc} (${temp}°C)`);
+      setWeatherText(`${firstCharToUpper(desc)} (${temp}°C)`);
       setWeatherIcon(icon);
     });
 }

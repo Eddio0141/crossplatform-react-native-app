@@ -1,14 +1,16 @@
 import uuid from 'react-native-uuid';
 
 class Event {
-  // (day: number, timeStart: EventTime, duration: number (minutes), activity: string, lat: number, lon: number)
-  constructor(timeStart, duration, activity, lat, lon) {
+  // (day: number, timeStart: EventTime, duration: number (minutes), remindMinutes (minutes), activity: string, lat: number, lon: number)
+  constructor(timeStart, duration, remindMinutes, activity, lat, lon) {
     this.timeStart = timeStart;
     this.timeEnd = timeStart.addMinutes(duration < 0 ? 0 : duration);
+    this.remindMinutes = remindMinutes;
     this.activity = activity;
     this.lat = lat;
     this.lon = lon;
     this.uuid = uuid.v4();
+    this.duration = duration;
   }
 
   equals(other) {
@@ -23,7 +25,8 @@ class EventTime {
   constructor(day, hour, minute) {
     this.day = day;
     this.hour = hour;
-    this.minute = minute;
+    this.minute = minute % 60;
+    this.hour += Math.floor(minute / 60);
   }
 
   addMinutes(minutes) {

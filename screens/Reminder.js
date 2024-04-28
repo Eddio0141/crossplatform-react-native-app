@@ -7,8 +7,9 @@ import { SharedContext } from "../SharedContext";
 import { FilterIndex } from "../utils/Array";
 
 export default function Reminder({ navigation }) {
-  const { todayEvents, setTodayEvents, setCurrentEvent } = useContext(SharedContext);
-  const { event } = todayEvents.events[0];
+  const { todayEvents, setTodayEvents, setCurrentEvent, setReminderShow } = useContext(SharedContext);
+  const event = todayEvents.events[0];
+  // TODO: check if same date, handle midnight reset
 
   // TODO: clock react to time
   return (
@@ -24,11 +25,12 @@ export default function Reminder({ navigation }) {
       <View style={{ flexDirection: "row", justifyContent: "space-around", width: "70%" }}>
         <Button onPress={() => {
           // TODO: alert, are you sure you want to cancel?
-          let cancelled = todayEventsCancelled.cancelled;
-          cancelled.push(todayEvents.events[0]);
+          // BUG: handle reset midnight
+          let cancelled = todayEvents.cancelled;
+          cancelled.push(event);
           const events = FilterIndex(todayEvents.events, 0);
-          const date = todayEvents.date;
-          setTodayEvents({ date, events, cancelled });
+          setTodayEvents({ ...todayEvents, events, cancelled });
+          setReminderShow(false);
           return navigation.goBack();
         }} title="Cancel" />
         <Button onPress={() => {
@@ -43,6 +45,7 @@ export default function Reminder({ navigation }) {
           // TODO: save to storage
 
           setTodayEvents(FilterIndex(todayEvents, 0));
+          setReminderShow(false);
 
           // TODO: also save to storage
         }} title="Start" />

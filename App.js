@@ -12,7 +12,7 @@ import Reminder from "./screens/Reminder";
 import { SharedContext } from "./SharedContext";
 import { FromStorage } from "./utils/Storage";
 import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
-import { useNavigation } from '@react-navigation/native';
+import { FilterIndex } from "./utils/Array";
 
 const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
@@ -31,7 +31,7 @@ function EventsResetMidnight(todayEvents, setTodayEvents, events) {
   return () => clearInterval(id);
 }
 
-function ReminderCheck(todayEvents, reminderShow, setReminderShow, navigation) {
+function ReminderCheck(todayEvents, setTodayEvents, reminderShow, setReminderShow, navigation) {
   const id = setInterval(() => {
     if (reminderShow) return;
     const currentEvent = todayEvents.events[0];
@@ -40,9 +40,14 @@ function ReminderCheck(todayEvents, reminderShow, setReminderShow, navigation) {
     const minutesLeft = (currentEvent.timeStart.hour - today.getHours()) * 60 + (currentEvent.timeStart.minute - today.getMinutes());
     console.log(`minutesLeft: ${minutesLeft}, remindMinutes: ${currentEvent.remindMinutes}`);
     const minutesTillEnd = minutesLeft + currentEvent.duration;
-    if (minutesTillEnd > 0 && minutesLeft <= currentEvent.remindMinutes) {
-      setReminderShow(true);
-      navigation.navigate("Reminder");
+    if (minutesTillEnd > 0) {
+      if (minutesLeft <= currentEvent.remindMinutes) {
+        setReminderShow(true);
+        navigation.navigate("Reminder");
+      }
+    } else {
+      // event has ended
+      setTodayEvents(FilterIndex(todayEvents, 0));
     }
   }, 1000);
 
@@ -86,7 +91,7 @@ export default function App() {
 
   const AppRoot = ({ navigation }) => {
     // handle reminder notifications
-    useEffect(() => ReminderCheck(todayEvents, reminderShow, setReminderShow, navigation), [todayEvents]);
+    useEffect(() => ReminderCheck(todayEvents, setTodayEvents, reminderShow, setReminderShow, navigation), [todayEvents]);
 
     return (
       <Tab.Navigator>

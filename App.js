@@ -47,7 +47,6 @@ function ReminderCheck(todayEvents, setTodayEvents, reminderShow, setReminderSho
     if (currentEvent === undefined) return;
     const today = new Date();
     const minutesLeft = (currentEvent.timeStart.hour - today.getHours()) * 60 + (currentEvent.timeStart.minute - today.getMinutes());
-    console.log(`minutesLeft: ${minutesLeft}, remindMinutes: ${currentEvent.remindMinutes}`);
     const minutesTillEnd = minutesLeft + currentEvent.duration;
     if (minutesTillEnd > 0) {
       if (minutesLeft <= currentEvent.remindMinutes) {

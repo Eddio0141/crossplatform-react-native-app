@@ -23,6 +23,7 @@ function UpdateTodayEvents(todayEvents, setTodayEvents, events) {
 }
 
 function TodayEventsToStorage(todayEvents) {
+  console.log(`Storing today events: ${todayEvents}`);
   ToStorage(TodayEventsKey, todayEvents);
 }
 

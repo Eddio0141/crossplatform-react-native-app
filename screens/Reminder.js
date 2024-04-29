@@ -62,8 +62,9 @@ export default function Reminder({ navigation }) {
           ToStorage(CurrentEventKey, event);
 
           const events = FilterIndex(todayEvents.events, 0);
-          setTodayEvents({ ...todayEvents, events });
-          TodayEventsToStorage();
+          const newToday = { ...todayEvents, events };
+          setTodayEvents(newToday);
+          TodayEventsToStorage(newToday);
           setReminderShow(false);
         }} title="Start" />
       </View>

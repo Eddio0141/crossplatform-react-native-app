@@ -16,6 +16,7 @@ import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
 import * as Notifications from "expo-notifications";
 import { CurrentEventKey } from "./consts/Storage";
+import { EventTime } from "./models/Event";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -82,12 +83,22 @@ export default function App() {
   }
 
   if (currentEvent === undefined) {
-    FromStorage(CurrentEventKey).then((currentEventData) => {
+    FromStorage(CurrentEventKey).then((currentEventDataRaw) => {
       console.log("Loaded current event from storage");
       // validate
-      if (currentEventData !== null) {
+      if (currentEventDataRaw !== null) {
         const today = new Date();
-        if (currentEventData.timeStart.getDay() === today.getDay() && currentEventData.timeStart < today && currentEventData.timeEnd > today) {
+        console.log(typeof currentEventDataRaw.timeStart.timeLessThanDate);
+        console.log(currentEventDataRaw.timeStart);
+        const { timeStart, timeEnd } = currentEventDataRaw;
+        const currentEventData = {
+          ...currentEventDataRaw,
+          timeStart: new EventTime(timeStart.day, timeStart.hour, timeStart.minute),
+          timeEnd: new EventTime(timeEnd.day, timeEnd.hour, timeEnd.minute),
+        };
+        if (currentEventData.timeEnd.day === today.getDay() &&
+          currentEventData.timeEnd.timeMoreThanDate(today)
+        ) {
           setCurrentEvent(currentEventData);
           return;
         }

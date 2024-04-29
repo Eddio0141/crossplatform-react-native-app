@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import HLine from "../components/HLine";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,11 +7,47 @@ import { FormatTime } from "../utils/Time";
 import { Weather } from "../components/Weather";
 import SharedStyle from "../Style";
 import { SharedContext } from "../SharedContext";
+import { Pedometer } from "expo-sensors";
+import { StepsTodayKey } from "../consts/Storage";
 
 function SummaryBar() {
   // TODO: make this args
   const [calories, setCalories] = useState(undefined);
   const [exercise, setExercise] = useState(undefined);
+  const [steps, setSteps] = useState(undefined);
+  const [renderSteps, setRenderSteps] = useState(false);
+
+  if (steps === undefined) {
+    (async () => {
+      // only render steps if pedometer is available
+      const available = await Pedometer.isAvailableAsync();
+      if (!available) {
+        setSteps(0);
+        return;
+      }
+
+      const permStatus = await Pedometer.requestPermissionsAsync();
+
+      if (!permStatus.granted) {
+        setSteps(0);
+        return;
+      }
+
+      setRenderSteps(true);
+
+      try {
+        const stepsTodayData = await AsyncStorage.getItem(StepsTodayKey);
+        if (stepsTodayData !== null) {
+          setSteps(stepsTodayData);
+        } else {
+          setSteps(0);
+        }
+      } catch (e) {
+        console.error(`Error getting steps: ${e}`);
+        setSteps(0);
+      }
+    })();
+  }
 
   // only read from storage when nessesary
   if (calories === undefined) {
@@ -43,10 +79,30 @@ function SummaryBar() {
     getData().then();
   }
 
+  // update steps
+  useEffect(() => {
+    if (!renderSteps) return;
+
+    const stepWatch = async () =>
+      Pedometer.watchStepCount(result => {
+        setSteps(result.steps);
+        // to storage
+        AsyncStorage.setItem(StepsTodayKey, result.steps.toString());
+        // TODO: to calories burnt
+      });
+
+    const subscription = stepWatch();
+
+    return () => subscription.then(r => r.remove());
+  }, [renderSteps]);
+
   return (
     <View style={styles.summaryBar}>
       <Text style={styles.summaryText}>🔥 {calories} calories burnt</Text>
       <Text style={styles.summaryText}>🕖 {exercise} mins of exercise</Text>
+      {
+        renderSteps ? <Text style={styles.summaryText}>🚶 {steps} steps</Text> : null
+      }
     </View>
   );
 }

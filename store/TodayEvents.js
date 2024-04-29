@@ -1,5 +1,6 @@
 import { FromStorage, ToStorage } from "../utils/Storage";
 import { DateEqualsWithoutTime } from "../utils/Time";
+import { CopyEventTime } from "../models/Event";
 
 const TodayEventsKey = "today-events";
 
@@ -30,7 +31,16 @@ function TodayEventsToStorage(todayEvents) {
 function LoadEventsFromStorage(todayEvents, setTodayEvents, events) {
   FromStorage(TodayEventsKey).then((todayEventsData) => {
     const date = todayEventsData === null ? undefined : new Date(todayEventsData.date);
-    const data = { ...todayEventsData, date };
+    // javascript has no types and is stupid
+    const todayEventsMapped = todayEventsData === null ? [] : todayEventsData.events.map((event) => {
+      const { timeStart, timeEnd } = event;
+      return {
+        ...event,
+        timeStart: CopyEventTime(timeStart),
+        timeEnd: CopyEventTime(timeEnd),
+      };
+    });
+    const data = { ...todayEventsData, date, todayEventsMapped };
 
     console.log(`Loaded today events from storage, data: ${todayEventsData}`);
     // make sure date is the same

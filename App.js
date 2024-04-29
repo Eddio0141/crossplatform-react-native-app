@@ -16,7 +16,7 @@ import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
 import * as Notifications from "expo-notifications";
 import { CurrentEventKey } from "./consts/Storage";
-import { EventTime } from "./models/Event";
+import { EventTime, CopyEventTime } from "./models/Event";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -72,7 +72,16 @@ export default function App() {
   const [reminderShow, setReminderShow] = useState(false);
 
   if (events === undefined) {
-    FromStorage("events", []).then((eventsData) => {
+    FromStorage("events", []).then((eventsDataRaw) => {
+      const eventsData = eventsDataRaw.map((event) => {
+        const { timeStart, timeEnd } = event;
+        return {
+          ...event,
+          timeStart: CopyEventTime(timeStart),
+          timeEnd: CopyEventTime(timeEnd),
+        };
+      });
+
       console.log("Loaded events from storage");
       setEvents(eventsData);
     });
@@ -93,8 +102,8 @@ export default function App() {
         const { timeStart, timeEnd } = currentEventDataRaw;
         const currentEventData = {
           ...currentEventDataRaw,
-          timeStart: new EventTime(timeStart.day, timeStart.hour, timeStart.minute),
-          timeEnd: new EventTime(timeEnd.day, timeEnd.hour, timeEnd.minute),
+          timeStart: CopyEventTime(timeStart),
+          timeEnd: CopyEventTime(timeEnd),
         };
         if (currentEventData.timeEnd.day === today.getDay() &&
           currentEventData.timeEnd.timeMoreThanDate(today)

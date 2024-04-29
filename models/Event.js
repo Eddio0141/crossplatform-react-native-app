@@ -12,10 +12,10 @@ class Event {
     this.uuid = uuid.v4();
     this.duration = duration;
   }
+}
 
-  equals(other) {
-    return this.uuid === other.uuid;
-  }
+function CopyEventTime(other) {
+  return new EventTime(other.day, other.hour, other.minute);
 }
 
 // made only for storing event time, Date isn't required
@@ -68,4 +68,4 @@ class EventTime {
   }
 }
 
-export { EventTime, Event };
+export { EventTime, Event, CopyEventTime };

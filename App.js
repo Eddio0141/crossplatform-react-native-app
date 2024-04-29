@@ -7,7 +7,7 @@ import Feather from "@expo/vector-icons/Feather";
 import Home from "./screens/Home";
 import Calendar from "./screens/Calendar";
 import Weather from "./screens/Weather";
-import Settings from "./screens/Settings";
+import Settings, { ManagePersonalSettings } from "./screens/Settings";
 import Reminder from "./screens/Reminder";
 import Activity from "./screens/Activity";
 import { SharedContext } from "./SharedContext";
@@ -16,8 +16,10 @@ import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
 import * as Notifications from "expo-notifications";
 import { CurrentEventKey } from "./consts/Storage";
-import { EventTime, CopyEventTime } from "./models/Event";
+import { CopyEventTime } from "./models/Event";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ManageActivities from "./screens/ManageActivities";
+import { LoadWeight, LoadHeight } from "./store/PersonalSettings";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -71,6 +73,17 @@ export default function App() {
   const [todayEvents, setTodayEvents] = useState(undefined);
   const [currentEvent, setCurrentEvent] = useState(undefined);
   const [reminderShow, setReminderShow] = useState(false);
+
+  const [weightKg, setWeightKg] = useState(undefined);
+  const [heightCm, setHeightCm] = useState(undefined);
+
+  if (weightKg === undefined) {
+    LoadWeight(setWeightKg);
+  }
+
+  if (heightCm === undefined) {
+    LoadHeight(setHeightCm);
+  }
 
   if (events === undefined) {
     FromStorage("events", []).then((eventsDataRaw) => {
@@ -169,19 +182,32 @@ export default function App() {
           headerShown: false,
         }} />
         <Tab.Screen name="Settings"
-          children={(props) => <Settings {...props} events={events} setEvents={setEvents} setCurrentEvent={setCurrentEvent} />}
+          component={Settings}
           options={{
             tabBarIcon: ({ color, size }) => (
               <Feather name="settings" color={color} size={size} />
             ),
-            headerShown: false,
+            headerShown: true,
+            headerTitleAlign: "center",
           }} />
       </Tab.Navigator>
     );
   };
 
   return (
-    <SharedContext.Provider value={{ currentEvent, setCurrentEvent, todayEvents, setTodayEvents, setReminderShow }}>
+    <SharedContext.Provider value={{
+      events,
+      setEvents,
+      currentEvent,
+      setCurrentEvent,
+      todayEvents,
+      setTodayEvents,
+      setReminderShow,
+      weightKg,
+      setWeightKg,
+      heightCm,
+      setHeightCm
+    }}>
       <NavigationContainer>
         <RootStack.Navigator>
           <RootStack.Group>
@@ -189,6 +215,8 @@ export default function App() {
           </RootStack.Group>
           <RootStack.Group screenOptions={{ presentation: "modal" }}>
             <RootStack.Screen name="Reminder" component={Reminder} />
+            <RootStack.Screen name="ManageActivities" component={ManageActivities} options={{ headerTitle: "Manage Activities" }} />
+            <RootStack.Screen name="ManagePersonalSettings" component={ManagePersonalSettings} options={{ headerTitle: "Manage Personal Settings" }} />
           </RootStack.Group>
         </RootStack.Navigator>
       </NavigationContainer >

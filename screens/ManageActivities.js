@@ -1,9 +1,11 @@
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Button, Alert } from 'react-native';
-import SharedStyle from '../Style';
-import { FontAwesome6 } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
-import { FormatTime } from '../utils/Time';
-import HLine from '../components/HLine';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Button, Alert } from "react-native";
+import SharedStyle from "../Style";
+import { FontAwesome6 } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
+import { FormatTime } from "../utils/Time";
+import HLine from "../components/HLine";
+import { SharedContext } from "../SharedContext";
+import { useContext } from "react";
 
 const dayText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -56,7 +58,9 @@ function RenderDay(day, eventsFiltered, lastIndex, index, events, setEvents) {
   );
 }
 
-export default function ManagedActivities({ events, setEvents }) {
+export default function ManagedActivities() {
+  const { events, setEvents } = useContext(SharedContext);
+
   let lastIndex = 0;
   // TODO: performance can be better by replacing scrollview
   return (

@@ -1,12 +1,64 @@
-import { View, StyleSheet, Text, TouchableOpacity, Button } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Button, TextInput } from "react-native";
 import { Event, EventTime } from "../models/Event";
 import { FontAwesome6 } from '@expo/vector-icons';
 import SharedStyle from "../Style";
-import ManageActivities from "../screens/ManageActivities";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SharedContext } from "../SharedContext";
+import { useContext, useState, useEffect } from "react";
+import { SaveWeight, SaveHeight } from "../store/PersonalSettings";
 
-function SettingsMain({ events, setEvents, navigation, setCurrentEvent }) {
+function ManagePersonalSettings() {
+  const { weightKg, setWeightKg, heightCm, setHeightCm } = useContext(SharedContext);
+
+  const [weightKgText, setWeightKgText] = useState("0");
+  const [heightCmText, setHeightCmText] = useState("0");
+
+  useEffect(() => {
+    setWeightKgText(weightKg.toString());
+  }, [weightKg]);
+
+  useEffect(() => {
+    setHeightCmText(heightCm.toString());
+  }, [heightCm]);
+
+  // TODO: kg, cm, etc
+
+  return (
+    <View style={{ ...SharedStyle.container, justifyContent: "center" }}>
+      <View>
+        <View style={styles.weightHeightContainer}>
+          <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Weight</Text>
+          <TextInput style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }} keyboardType="numeric" value={weightKgText} onChangeText={(text) => setWeightKgText(text)} onEndEditing={() => {
+            if (weightKgText === "") {
+              setWeightKgText(weightKg.toString());
+            }
+            const num = parseInt(weightKgText);
+            if (isNaN(num)) return;
+            setWeightKg(num);
+            SaveWeight(num);
+          }} />
+          <Text style={styles.weightHeightFont}>kg</Text>
+        </View>
+        <View style={styles.weightHeightContainer}>
+          <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Height</Text>
+          <TextInput style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }} keyboardType="numeric" value={heightCmText} onChangeText={(text) => setHeightCmText(text)} onEndEditing={() => {
+            if (heightCmText === "") {
+              heightCmText(heightCm.toString());
+            }
+            const num = parseInt(heightCmText);
+            if (isNaN(num)) return;
+            setHeightCm(num);
+            SaveHeight(num);
+          }} />
+          <Text style={styles.weightHeightFont}>cm</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+export default function Settings({ navigation }) {
   const today = new Date();
+  const { setEvents } = useContext(SharedContext);
 
   const Test = () => {
     return (
@@ -40,25 +92,16 @@ function SettingsMain({ events, setEvents, navigation, setCurrentEvent }) {
         <FontAwesome6 name="person-running" size={30} color="black" />
         <Text style={styles.buttonText}>Manage Activities</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={{ ...SharedStyle.shadowButton, ...styles.button }} onPress={() => navigation.navigate("ManagePersonalSettings")}>
+        <FontAwesome6 name="user" size={30} color="black" />
+        <Text style={styles.buttonText}>Personal settings</Text>
+      </TouchableOpacity>
       <Test />
     </View >
-  )
+  );
 }
 
-const Stack = createNativeStackNavigator();
-
-export default function Settings({ events, setEvents, setCurrentEvent }) {
-  return (
-    <Stack.Navigator initialRouteName="SettingsMain">
-      <Stack.Screen name="SettingsMain" options={{ headerTitle: "Settings" }}>
-        {(props) => <SettingsMain {...props} events={events} setEvents={setEvents} setCurrentEvent={setCurrentEvent} />}
-      </Stack.Screen>
-      <Stack.Screen name="ManageActivities" options={{ headerTitle: "Manage Activities" }}>
-        {(props) => <ManageActivities {...props} events={events} setEvents={setEvents} />}
-      </Stack.Screen>
-    </Stack.Navigator >
-  )
-}
+export { ManagePersonalSettings };
 
 const styles = StyleSheet.create({
   button: {
@@ -69,5 +112,23 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 20,
     margin: 20,
+  },
+  weightHeightContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    padding: 5,
+    marginBottom: 5,
+    width: "90%",
+  },
+  textInput: {
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingVertical: 1,
+    paddingHorizontal: 5,
+    textAlign: "right",
+  },
+  weightHeightFont: {
+    fontSize: 30,
   },
 });

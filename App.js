@@ -17,6 +17,7 @@ import { FilterIndex } from "./utils/Array";
 import * as Notifications from "expo-notifications";
 import { CurrentEventKey } from "./consts/Storage";
 import { EventTime, CopyEventTime } from "./models/Event";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -115,6 +116,24 @@ export default function App() {
       setCurrentEvent(null);
     });
   }
+
+  // check if current event has ended
+  useEffect(() => {
+    if (currentEvent === null || currentEvent === undefined) return;
+
+    const id = setInterval(() => {
+      const today = new Date();
+      if (currentEvent.timeEnd.day !== today.getDay() ||
+        currentEvent.timeEnd.timeLessThanDate(today)
+      ) {
+        setCurrentEvent(null);
+        // remove current event from storage
+        AsyncStorage.removeItem(CurrentEventKey).then();
+      }
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [currentEvent]);
 
   // handle resetting today events at midnight
   useEffect(() => EventsResetMidnight(todayEvents, setTodayEvents, events), [events]);

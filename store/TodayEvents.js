@@ -42,4 +42,4 @@ function LoadEventsFromStorage(todayEvents, setTodayEvents, events) {
   });
 }
 
-export { UpdateTodayEvents, LoadEventsFromStorage };
+export { UpdateTodayEvents, TodayEventsToStorage, LoadEventsFromStorage };

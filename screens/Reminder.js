@@ -6,6 +6,9 @@ import { useContext } from "react";
 import { SharedContext } from "../SharedContext";
 import { FilterIndex } from "../utils/Array";
 import * as Notifications from "expo-notifications";
+import { CurrentEventKey } from "../consts/Storage";
+import { ToStorage } from "../utils/Storage";
+import { TodayEventsToStorage } from "../store/TodayEvents";
 
 export default function Reminder({ navigation }) {
   const { todayEvents, setTodayEvents, setCurrentEvent, setReminderShow } = useContext(SharedContext);
@@ -56,13 +59,12 @@ export default function Reminder({ navigation }) {
 
           console.log("Reminder: event is now active");
           setCurrentEvent(event);
-          // TODO: save to storage
+          ToStorage(CurrentEventKey, event);
 
           const events = FilterIndex(todayEvents.events, 0);
           setTodayEvents({ ...todayEvents, events });
+          TodayEventsToStorage();
           setReminderShow(false);
-
-          // TODO: also save to storage
         }} title="Start" />
       </View>
     </View>

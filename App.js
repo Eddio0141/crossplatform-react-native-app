@@ -15,6 +15,7 @@ import { FromStorage } from "./utils/Storage";
 import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
 import * as Notifications from "expo-notifications";
+import { CurrentEventKey } from "./consts/Storage";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -81,7 +82,7 @@ export default function App() {
   }
 
   if (currentEvent === undefined) {
-    FromStorage("current-event").then((currentEventData) => {
+    FromStorage(CurrentEventKey).then((currentEventData) => {
       console.log("Loaded current event from storage");
       // validate
       if (currentEventData !== null) {

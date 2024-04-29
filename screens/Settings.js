@@ -27,28 +27,38 @@ function ManagePersonalSettings() {
       <View>
         <View style={styles.weightHeightContainer}>
           <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Weight</Text>
-          <TextInput style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }} keyboardType="numeric" value={weightKgText} onChangeText={(text) => setWeightKgText(text)} onEndEditing={() => {
-            if (weightKgText === "") {
-              setWeightKgText(weightKg.toString());
-            }
-            const num = parseInt(weightKgText);
-            if (isNaN(num)) return;
-            setWeightKg(num);
-            SaveWeight(num);
-          }} />
+          <TextInput
+            style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }}
+            keyboardType="numeric"
+            value={weightKgText}
+            onChangeText={(text) => setWeightKgText(text)}
+            onEndEditing={() => {
+              if (weightKgText === "") {
+                setWeightKgText(weightKg.toString());
+              }
+              const num = parseInt(weightKgText);
+              if (isNaN(num)) return;
+              setWeightKg(num);
+              SaveWeight(num);
+            }} />
           <Text style={styles.weightHeightFont}>kg</Text>
         </View>
         <View style={styles.weightHeightContainer}>
           <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Height</Text>
-          <TextInput style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }} keyboardType="numeric" value={heightCmText} onChangeText={(text) => setHeightCmText(text)} onEndEditing={() => {
-            if (heightCmText === "") {
-              heightCmText(heightCm.toString());
-            }
-            const num = parseInt(heightCmText);
-            if (isNaN(num)) return;
-            setHeightCm(num);
-            SaveHeight(num);
-          }} />
+          <TextInput
+            style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }}
+            keyboardType="numeric"
+            value={heightCmText}
+            onChangeText={(text) => setHeightCmText(text)}
+            onEndEditing={() => {
+              if (heightCmText === "") {
+                heightCmText(heightCm.toString());
+              }
+              const num = parseInt(heightCmText);
+              if (isNaN(num)) return;
+              setHeightCm(num);
+              SaveHeight(num);
+            }} />
           <Text style={styles.weightHeightFont}>cm</Text>
         </View>
       </View>

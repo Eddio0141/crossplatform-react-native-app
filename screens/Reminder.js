@@ -66,6 +66,8 @@ export default function Reminder({ navigation }) {
           setTodayEvents(newToday);
           TodayEventsToStorage(newToday);
           setReminderShow(false);
+
+          return navigation.goBack();
         }} title="Start" />
       </View>
     </View>

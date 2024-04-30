@@ -22,7 +22,7 @@ export default function EventSetup({ navigation }) {
               key={index}
               style={{ flexDirection: "row", alignItems: "center" }}
               onPress={() => {
-                setEventSetup({ category: exercise.name });
+                setEventSetup({ activity: exercise.name });
                 navigation.navigate("EventTime");
               }}
             >

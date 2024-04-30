@@ -24,6 +24,7 @@ import Welcome from "./screens/Welcome";
 import GetStarted from "./screens/GetStarted";
 import GetStarted2 from "./screens/GetStarted2";
 import { View } from "react-native";
+import { ToStorage } from "./utils/Storage";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -182,7 +183,9 @@ export default function App() {
         currentEvent.timeEnd.timeLessThanDate(today)
       ) {
         // add minutes of exercise done
-        setExercise(exercise + currentEvent.duration);
+        const totalExercise = exercise + currentEvent.duration;
+        setExercise(totalExercise);
+        ToStorage(ExerciseTodayKey, totalExercise);
         setCurrentEvent(null);
         // remove current event from storage
         AsyncStorage.removeItem(CurrentEventKey).then();

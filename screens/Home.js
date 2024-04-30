@@ -9,6 +9,7 @@ import SharedStyle from "../Style";
 import { SharedContext } from "../SharedContext";
 import { Pedometer } from "expo-sensors";
 import { StepsTodayKey, ExerciseTodayKey, CaloriesTodayKey } from "../consts/Storage";
+import { CentimeterToFeet, KgToPound } from "../consts/MetricConversion";
 
 function SummaryBar() {
   // TODO: make this args
@@ -16,6 +17,8 @@ function SummaryBar() {
   const [exercise, setExercise] = useState(undefined);
   const [steps, setSteps] = useState(undefined);
   const [renderSteps, setRenderSteps] = useState(false);
+
+  const { weightMetric, heightMetric, weightKg, heightCm } = useContext(SharedContext);
 
   if (steps === undefined) {
     (async () => {
@@ -26,12 +29,17 @@ function SummaryBar() {
         return;
       }
 
-      const permStatus = await Pedometer.requestPermissionsAsync();
-
-      if (!permStatus.granted) {
-        setSteps(0);
-        return;
+      try {
+        const permStatus = await Pedometer.requestPermissionsAsync();
+        if (!permStatus.granted) {
+          setSteps(0);
+          return;
+        }
+      } catch (e) {
+        console.log(`Error requesting pedometer permissions: ${e}`);
       }
+
+      console.log("Pedometer is available");
 
       setRenderSteps(true);
 
@@ -88,7 +96,23 @@ function SummaryBar() {
         setSteps(result.steps);
         // to storage
         AsyncStorage.setItem(StepsTodayKey, result.steps.toString());
-        // TODO: to calories burnt
+
+        // https://www.omnicalculator.com/sports/steps-to-calories
+        // - MET values
+        //   - slow (0.9m/s) = 2.8
+        //   - normal (1.34m/s) = 3.5
+        //   - fast (1.79m/s) = 5
+        // - assuming normal pace
+        const height = (heightMetric === "cm" ? heightCm : heightCm / CentimeterToFeet) / 100;
+        const weight = weightMetric === "kg" ? weightKg : weightKg / KgToPound;
+        const met = 3.5;
+
+        const stride = height * 0.414;
+        const time = result.steps * stride;
+
+        const caloriesBurnt = time * met * 3.5 * weight / 12000;
+
+        setCalories(calories + caloriesBurnt);
       });
 
     const subscription = stepWatch();

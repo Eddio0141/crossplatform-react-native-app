@@ -30,7 +30,7 @@ export default function GetStarted({ navigation }) {
       <Text style={{ fontSize: 35 }}>Add exercises!</Text>
       <EventsDisplay />
       <View style={{ marginBottom: 10 }} />
-      <Button title="Add Exercise" />
+      <Button title="Add Exercise" onPress={() => navigation.navigate("EventSetup")} />
       <View style={{ flex: 0.7 }} />
       <TouchableOpacity
         style={{ ...SharedStyle.shadowButton, borderWidth: 1, borderRadius: 5, paddingVertical: 5, paddingHorizontal: 45 }}

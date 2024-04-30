@@ -29,5 +29,12 @@ export default SharedStyle = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-  }
+  },
+  textInput: {
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingVertical: 1,
+    paddingHorizontal: 5,
+    textAlign: "right",
+  },
 });

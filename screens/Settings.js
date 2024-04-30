@@ -68,7 +68,7 @@ function ManagePersonalSettings() {
       <View style={styles.weightHeightContainer}>
         <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Weight</Text>
         <TextInput
-          style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }}
+          style={{ ...SharedStyle.textInput, ...styles.weightHeightFont, marginRight: 5 }}
           keyboardType="numeric"
           value={weightKgText}
           onChangeText={(text) => setWeightKgText(text)}
@@ -86,7 +86,7 @@ function ManagePersonalSettings() {
       <View style={styles.weightHeightContainer}>
         <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Height</Text>
         <TextInput
-          style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }}
+          style={{ ...SharedStyle.textInput, ...styles.weightHeightFont, marginRight: 5 }}
           keyboardType="numeric"
           value={heightCmText}
           onChangeText={(text) => setHeightCmText(text)}
@@ -193,13 +193,6 @@ const styles = StyleSheet.create({
     padding: 5,
     marginBottom: 5,
     width: "90%",
-  },
-  textInput: {
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingVertical: 1,
-    paddingHorizontal: 5,
-    textAlign: "right",
   },
   weightHeightFont: {
     fontSize: 30,

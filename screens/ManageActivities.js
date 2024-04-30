@@ -58,7 +58,7 @@ function RenderDay(day, eventsFiltered, lastIndex, index, events, setEvents) {
   );
 }
 
-export default function ManagedActivities() {
+export default function ManagedActivities({ navigation }) {
   const { events, setEvents } = useContext(SharedContext);
 
   let lastIndex = 0;
@@ -66,7 +66,7 @@ export default function ManagedActivities() {
   return (
     <View style={{ ...SharedStyle.container, alignSelf: "flex-start", width: "100%" }}>
       <View style={{ marginBottom: 7 }} />
-      <Button title="Add Activity" onPress={() => console.log("Add Activity")} />
+      <Button title="Add Activity" onPress={() => navigation.navigate("EventSetup")} />
       <View style={{ marginBottom: 5 }} />
       <HLine />
       <ScrollView style={{ width: "100%" }}>

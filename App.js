@@ -10,7 +10,7 @@ import Weather from "./screens/Weather";
 import Settings, { ManagePersonalSettings } from "./screens/Settings";
 import Reminder from "./screens/Reminder";
 import Activity from "./screens/Activity";
-import { SharedContext } from "./SharedContext";
+import { SharedContext, AddActivityContext } from "./SharedContext";
 import { FromStorage } from "./utils/Storage";
 import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
@@ -25,6 +25,8 @@ import GetStarted from "./screens/GetStarted";
 import GetStarted2 from "./screens/GetStarted2";
 import { View } from "react-native";
 import { ToStorage } from "./utils/Storage";
+import EventSetup from "./screens/EventSetup";
+import EventTime from "./screens/EventTime";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -66,7 +68,8 @@ function ReminderCheck(todayEvents, setTodayEvents, reminderShow, setReminderSho
       }
     } else {
       // event has ended
-      setTodayEvents(FilterIndex(todayEvents, 0));
+      const updatedEvents = { ...todayEvents, events: FilterIndex(todayEvents.events, 0) };
+      setTodayEvents(updatedEvents);
     }
   }, 1000);
 
@@ -88,6 +91,8 @@ export default function App() {
   const [exercise, setExercise] = useState(undefined);
   const [calories, setCalories] = useState(undefined);
   const [steps, setSteps] = useState(undefined);
+
+  const [eventSetup, setEventSetup] = useState({});
 
   // only read from storage when nessesary
   if (calories === undefined) {
@@ -258,43 +263,50 @@ export default function App() {
   );
 
   return (
-    <SharedContext.Provider value={{
-      events,
-      setEvents,
-      currentEvent,
-      setCurrentEvent,
-      todayEvents,
-      setTodayEvents,
-      setReminderShow,
-      weightKg,
-      setWeightKg,
-      heightCm,
-      setHeightCm,
-      weightMetric,
-      setWeightMetric,
-      heightMetric,
-      setHeightMetric,
-      exercise,
-      calories,
-      steps,
-      setSteps,
-      setCalories,
+    <AddActivityContext.Provider value={{
+      eventSetup,
+      setEventSetup
     }}>
-      <NavigationContainer>
-        <RootStack.Navigator>
-          <RootStack.Group>
-            <RootStack.Screen name="Root" component={AppRoot} options={{ headerShown: false }} />
-          </RootStack.Group>
-          <RootStack.Group screenOptions={{ presentation: "modal" }}>
-            <RootStack.Screen name="Reminder" component={Reminder} />
-            <RootStack.Screen name="ManageActivities" component={ManageActivities} options={{ headerTitle: "Manage Activities" }} />
-            <RootStack.Screen name="ManagePersonalSettings" component={ContainedPersonalSettings} options={{ headerTitle: "Manage Personal Settings" }} />
-            <RootStack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
-            <RootStack.Screen name="GetStarted" component={GetStarted} options={{ headerShown: false }} />
-            <RootStack.Screen name="GetStarted2" component={GetStarted2} options={{ headerShown: false }} />
-          </RootStack.Group>
-        </RootStack.Navigator>
-      </NavigationContainer >
-    </SharedContext.Provider >
+      <SharedContext.Provider value={{
+        events,
+        setEvents,
+        currentEvent,
+        setCurrentEvent,
+        todayEvents,
+        setTodayEvents,
+        setReminderShow,
+        weightKg,
+        setWeightKg,
+        heightCm,
+        setHeightCm,
+        weightMetric,
+        setWeightMetric,
+        heightMetric,
+        setHeightMetric,
+        exercise,
+        calories,
+        steps,
+        setSteps,
+        setCalories,
+      }}>
+        <NavigationContainer>
+          <RootStack.Navigator>
+            <RootStack.Group>
+              <RootStack.Screen name="Root" component={AppRoot} options={{ headerShown: false }} />
+            </RootStack.Group>
+            <RootStack.Group screenOptions={{ presentation: "modal" }}>
+              <RootStack.Screen name="Reminder" component={Reminder} />
+              <RootStack.Screen name="ManageActivities" component={ManageActivities} options={{ headerTitle: "Manage Activities" }} />
+              <RootStack.Screen name="ManagePersonalSettings" component={ContainedPersonalSettings} options={{ headerTitle: "Manage Personal Settings" }} />
+              <RootStack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
+              <RootStack.Screen name="GetStarted" component={GetStarted} options={{ headerShown: false }} />
+              <RootStack.Screen name="GetStarted2" component={GetStarted2} options={{ headerShown: false }} />
+              <RootStack.Screen name="EventSetup" component={EventSetup} options={{ headerTitle: "Add activity" }} />
+              <RootStack.Screen name="EventTime" component={EventTime} options={{ headerTitle: "Activity time" }} />
+            </RootStack.Group>
+          </RootStack.Navigator>
+        </NavigationContainer >
+      </SharedContext.Provider >
+    </AddActivityContext.Provider>
   );
 }

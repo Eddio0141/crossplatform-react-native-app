@@ -15,7 +15,7 @@ import { FromStorage } from "./utils/Storage";
 import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
 import * as Notifications from "expo-notifications";
-import { CurrentEventKey, WelcomedKey, EventsKey } from "./consts/Storage";
+import { CurrentEventKey, WelcomedKey, EventsKey, ExerciseTodayKey, CaloriesTodayKey } from "./consts/Storage";
 import { CopyEventTime } from "./models/Event";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ManageActivities from "./screens/ManageActivities";
@@ -84,6 +84,41 @@ export default function App() {
   const [weightMetric, setWeightMetric] = useState(undefined);
   const [heightMetric, setHeightMetric] = useState(undefined);
 
+  const [exercise, setExercise] = useState(undefined);
+  const [calories, setCalories] = useState(undefined);
+  const [steps, setSteps] = useState(undefined);
+
+  // only read from storage when nessesary
+  if (calories === undefined) {
+    async function getData() {
+      try {
+        const caloriesTodayData = await AsyncStorage.getItem(CaloriesTodayKey);
+
+        if (caloriesTodayData !== null) {
+          setCalories(caloriesTodayData);
+        } else {
+          setCalories(0);
+        }
+
+        const exerciseTodayData = await AsyncStorage.getItem(ExerciseTodayKey);
+
+        if (exerciseTodayData !== null) {
+          setExercise(exerciseTodayData);
+        } else {
+          setExercise(0);
+        }
+      } catch (e) {
+        console.error(`Error getting calories: ${e}`);
+
+        setCalories(0);
+        setExercise(0);
+      }
+    }
+
+    getData().then();
+  }
+
+
   if (weightKg === undefined) {
     LoadWeight(setWeightKg);
     LoadWeightMetric(setWeightMetric);
@@ -146,6 +181,8 @@ export default function App() {
       if (currentEvent.timeEnd.day !== today.getDay() ||
         currentEvent.timeEnd.timeLessThanDate(today)
       ) {
+        // add minutes of exercise done
+        setExercise(exercise + currentEvent.duration);
         setCurrentEvent(null);
         // remove current event from storage
         AsyncStorage.removeItem(CurrentEventKey).then();
@@ -234,6 +271,11 @@ export default function App() {
       setWeightMetric,
       heightMetric,
       setHeightMetric,
+      exercise,
+      calories,
+      steps,
+      setSteps,
+      setCalories,
     }}>
       <NavigationContainer>
         <RootStack.Navigator>

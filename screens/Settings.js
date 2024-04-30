@@ -114,8 +114,8 @@ export default function Settings({ navigation }) {
       <View>
         <Button title="test" onPress={() => {
           setEvents([
-            new Event(new EventTime(today.getDay(), today.getHours(), today.getMinutes() + 2), 5, 1, "Jogging", 53.22659880937626, -0.5421307970516260),
-            new Event(new EventTime(today.getDay(), today.getHours() + 1, 10), 60, 10, "Jogging 2", 53.22659880937626, -0.5421307970516260),
+            new Event(new EventTime(today.getDay(), today.getHours(), today.getMinutes() + 2), 1, 1, "Jogging", 53.22659880937626, -0.5421307970516260),
+            new Event(new EventTime(today.getDay(), today.getHours() + 1, 10), 60, 1, "Jogging 2", 53.22659880937626, -0.5421307970516260),
             new Event(new EventTime(today.getDay(), today.getHours() + 1, 20), 60, 10, "Jogging 3", 53.22659880937626, -0.5421307970516260),
             new Event(new EventTime(today.getDay(), today.getHours() + 1, 30), 60, 10, "Jogging 4", 53.22659880937626, -0.5421307970516260),
             new Event(new EventTime(today.getDay(), today.getHours() + 1, 40), 60, 10, "Jogging 5", 53.22659880937626, -0.5421307970516260),

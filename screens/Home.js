@@ -8,18 +8,15 @@ import { Weather } from "../components/Weather";
 import SharedStyle from "../Style";
 import { SharedContext } from "../SharedContext";
 import { Pedometer } from "expo-sensors";
-import { StepsTodayKey, ExerciseTodayKey, CaloriesTodayKey } from "../consts/Storage";
+import { StepsTodayKey, CaloriesTodayKey } from "../consts/Storage";
 import { CentimeterToFeet, KgToPound } from "../consts/MetricConversion";
 import { ToStorage } from "../utils/Storage";
 
 function SummaryBar() {
   // TODO: make this args
-  const [calories, setCalories] = useState(undefined);
-  const [exercise, setExercise] = useState(undefined);
-  const [steps, setSteps] = useState(undefined);
   const [renderSteps, setRenderSteps] = useState(false);
 
-  const { weightMetric, heightMetric, weightKg, heightCm } = useContext(SharedContext);
+  const { weightMetric, heightMetric, weightKg, heightCm, exercise, calories, steps, setSteps, setCalories } = useContext(SharedContext);
 
   if (steps === undefined) {
     (async () => {
@@ -56,36 +53,6 @@ function SummaryBar() {
         setSteps(0);
       }
     })();
-  }
-
-  // only read from storage when nessesary
-  if (calories === undefined) {
-    async function getData() {
-      try {
-        const caloriesTodayData = await AsyncStorage.getItem(CaloriesTodayKey);
-
-        if (caloriesTodayData !== null) {
-          setCalories(caloriesTodayData);
-        } else {
-          setCalories(0);
-        }
-
-        const exerciseTodayData = await AsyncStorage.getItem(ExerciseTodayKey);
-
-        if (exerciseTodayData !== null) {
-          setExercise(exerciseTodayData);
-        } else {
-          setExercise(0);
-        }
-      } catch (e) {
-        console.error(`Error getting calories: ${e}`);
-
-        setCalories(0);
-        setExercise(0);
-      }
-    }
-
-    getData().then();
   }
 
   // update steps
@@ -125,7 +92,7 @@ function SummaryBar() {
 
   return (
     <View style={styles.summaryBar}>
-      <Text style={styles.summaryText}>🔥 {calories.toFixed(2)} calories burnt</Text>
+      <Text style={styles.summaryText}>🔥 {calories?.toFixed(2)} calories burnt</Text>
       <Text style={styles.summaryText}>🕖 {exercise} mins of exercise</Text>
       {
         renderSteps ? <Text style={styles.summaryText}>🚶 {steps} steps</Text> : null

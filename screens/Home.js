@@ -10,6 +10,7 @@ import { SharedContext } from "../SharedContext";
 import { Pedometer } from "expo-sensors";
 import { StepsTodayKey, ExerciseTodayKey, CaloriesTodayKey } from "../consts/Storage";
 import { CentimeterToFeet, KgToPound } from "../consts/MetricConversion";
+import { ToStorage } from "../utils/Storage";
 
 function SummaryBar() {
   // TODO: make this args
@@ -111,8 +112,10 @@ function SummaryBar() {
         const time = result.steps * stride;
 
         const caloriesBurnt = time * met * 3.5 * weight / 12000;
+        const totalCalories = calories + caloriesBurnt;
 
-        setCalories(calories + caloriesBurnt);
+        setCalories(totalCalories);
+        ToStorage(CaloriesTodayKey, totalCalories);
       });
 
     const subscription = stepWatch();
@@ -122,7 +125,7 @@ function SummaryBar() {
 
   return (
     <View style={styles.summaryBar}>
-      <Text style={styles.summaryText}>🔥 {calories} calories burnt</Text>
+      <Text style={styles.summaryText}>🔥 {calories.toFixed(2)} calories burnt</Text>
       <Text style={styles.summaryText}>🕖 {exercise} mins of exercise</Text>
       {
         renderSteps ? <Text style={styles.summaryText}>🚶 {steps} steps</Text> : null

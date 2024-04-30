@@ -48,7 +48,7 @@ export default function Reminder({ navigation }) {
           const events = FilterIndex(todayEvents.events, 0);
           setTodayEvents({ ...todayEvents, events, cancelled });
           setReminderShow(false);
-          return navigation.goBack();
+          navigation.goBack();
         }} title="Cancel" />
         <Button onPress={() => {
           // make sure event is still valid
@@ -67,7 +67,7 @@ export default function Reminder({ navigation }) {
           TodayEventsToStorage(newToday);
           setReminderShow(false);
 
-          return navigation.goBack();
+          navigation.goBack();
         }} title="Start" />
       </View>
     </View>

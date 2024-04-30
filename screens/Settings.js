@@ -5,9 +5,10 @@ import SharedStyle from "../Style";
 import { SharedContext } from "../SharedContext";
 import { useContext, useState, useEffect } from "react";
 import { SaveWeight, SaveHeight } from "../store/PersonalSettings";
+import RNPickerSelect from "react-native-picker-select";
 
 function ManagePersonalSettings() {
-  const { weightKg, setWeightKg, heightCm, setHeightCm } = useContext(SharedContext);
+  const { weightKg, setWeightKg, heightCm, setHeightCm, setHeightMetric, setWeightMetric } = useContext(SharedContext);
 
   const [weightKgText, setWeightKgText] = useState("0");
   const [heightCmText, setHeightCmText] = useState("0");
@@ -20,47 +21,59 @@ function ManagePersonalSettings() {
     setHeightCmText(heightCm.toString());
   }, [heightCm]);
 
-  // TODO: kg, cm, etc
-
   return (
-    <View style={{ ...SharedStyle.container, justifyContent: "center" }}>
-      <View>
-        <View style={styles.weightHeightContainer}>
-          <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Weight</Text>
-          <TextInput
-            style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }}
-            keyboardType="numeric"
-            value={weightKgText}
-            onChangeText={(text) => setWeightKgText(text)}
-            onEndEditing={() => {
-              if (weightKgText === "") {
-                setWeightKgText(weightKg.toString());
-              }
-              const num = parseInt(weightKgText);
-              if (isNaN(num)) return;
-              setWeightKg(num);
-              SaveWeight(num);
-            }} />
-          <Text style={styles.weightHeightFont}>kg</Text>
-        </View>
-        <View style={styles.weightHeightContainer}>
-          <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Height</Text>
-          <TextInput
-            style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }}
-            keyboardType="numeric"
-            value={heightCmText}
-            onChangeText={(text) => setHeightCmText(text)}
-            onEndEditing={() => {
-              if (heightCmText === "") {
-                heightCmText(heightCm.toString());
-              }
-              const num = parseInt(heightCmText);
-              if (isNaN(num)) return;
-              setHeightCm(num);
-              SaveHeight(num);
-            }} />
-          <Text style={styles.weightHeightFont}>cm</Text>
-        </View>
+    <View>
+      <RNPickerSelect
+        onValueChange={(value) => setWeightMetric(value)}
+        placeholder={{ label: "Weight metric", value: null }}
+        items={[
+          { label: "kg", value: "kg" },
+          { label: "stone", value: "stone" },
+        ]}
+      />
+      <RNPickerSelect
+        onValueChange={(value) => setHeightMetric(value)}
+        placeholder={{ label: "Height metric", value: null }}
+        items={[
+          { label: "cm", value: "cm" },
+          { label: "foot", value: "foot" },
+        ]}
+      />
+      <View style={styles.weightHeightContainer}>
+        <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Weight</Text>
+        <TextInput
+          style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }}
+          keyboardType="numeric"
+          value={weightKgText}
+          onChangeText={(text) => setWeightKgText(text)}
+          onEndEditing={() => {
+            if (weightKgText === "") {
+              setWeightKgText(weightKg.toString());
+            }
+            const num = parseInt(weightKgText);
+            if (isNaN(num)) return;
+            setWeightKg(num);
+            SaveWeight(num);
+          }} />
+        <Text style={styles.weightHeightFont}>kg</Text>
+      </View>
+      <View style={styles.weightHeightContainer}>
+        <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Height</Text>
+        <TextInput
+          style={{ ...styles.textInput, ...styles.weightHeightFont, marginRight: 5 }}
+          keyboardType="numeric"
+          value={heightCmText}
+          onChangeText={(text) => setHeightCmText(text)}
+          onEndEditing={() => {
+            if (heightCmText === "") {
+              heightCmText(heightCm.toString());
+            }
+            const num = parseInt(heightCmText);
+            if (isNaN(num)) return;
+            setHeightCm(num);
+            SaveHeight(num);
+          }} />
+        <Text style={styles.weightHeightFont}>cm</Text>
       </View>
     </View>
   );

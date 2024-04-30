@@ -15,11 +15,15 @@ import { FromStorage } from "./utils/Storage";
 import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
 import * as Notifications from "expo-notifications";
-import { CurrentEventKey } from "./consts/Storage";
+import { CurrentEventKey, WelcomedKey } from "./consts/Storage";
 import { CopyEventTime } from "./models/Event";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ManageActivities from "./screens/ManageActivities";
-import { LoadWeight, LoadHeight } from "./store/PersonalSettings";
+import { LoadWeight, LoadHeight, LoadHeightMetric, LoadWeightMetric } from "./store/PersonalSettings";
+import Welcome from "./screens/Welcome";
+import GetStarted from "./screens/GetStarted";
+import GetStarted2 from "./screens/GetStarted2";
+import { View } from "react-native";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -76,6 +80,8 @@ export default function App() {
 
   const [weightKg, setWeightKg] = useState(undefined);
   const [heightCm, setHeightCm] = useState(undefined);
+  const [weightMetric, setWeightMetric] = useState(undefined);
+  const [heightMetric, setHeightMetric] = useState(undefined);
 
   if (weightKg === undefined) {
     LoadWeight(setWeightKg);
@@ -83,6 +89,14 @@ export default function App() {
 
   if (heightCm === undefined) {
     LoadHeight(setHeightCm);
+  }
+
+  if (weightMetric === undefined) {
+    LoadWeightMetric(setWeightMetric);
+  }
+
+  if (heightMetric === undefined) {
+    LoadHeightMetric(setHeightMetric);
   }
 
   if (events === undefined) {
@@ -152,6 +166,13 @@ export default function App() {
   useEffect(() => EventsResetMidnight(todayEvents, setTodayEvents, events), [events]);
 
   const AppRoot = ({ navigation }) => {
+    // have we welcomed the user?
+    FromStorage(WelcomedKey, false).then((welcomed) => {
+      if (!welcomed) {
+        navigation.navigate("Welcome");
+      }
+    });
+
     // handle reminder notifications
     useEffect(() => ReminderCheck(todayEvents, setTodayEvents, reminderShow, setReminderShow, navigation), [todayEvents]);
 
@@ -194,6 +215,12 @@ export default function App() {
     );
   };
 
+  const ContainedPersonalSettings = () => (
+    <View style={{ ...SharedStyle.container, justifyContent: "center" }}>
+      <ManagePersonalSettings />
+    </View>
+  );
+
   return (
     <SharedContext.Provider value={{
       events,
@@ -206,7 +233,11 @@ export default function App() {
       weightKg,
       setWeightKg,
       heightCm,
-      setHeightCm
+      setHeightCm,
+      weightMetric,
+      setWeightMetric,
+      heightMetric,
+      setHeightMetric,
     }}>
       <NavigationContainer>
         <RootStack.Navigator>
@@ -216,7 +247,10 @@ export default function App() {
           <RootStack.Group screenOptions={{ presentation: "modal" }}>
             <RootStack.Screen name="Reminder" component={Reminder} />
             <RootStack.Screen name="ManageActivities" component={ManageActivities} options={{ headerTitle: "Manage Activities" }} />
-            <RootStack.Screen name="ManagePersonalSettings" component={ManagePersonalSettings} options={{ headerTitle: "Manage Personal Settings" }} />
+            <RootStack.Screen name="ManagePersonalSettings" component={ContainedPersonalSettings} options={{ headerTitle: "Manage Personal Settings" }} />
+            <RootStack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
+            <RootStack.Screen name="GetStarted" component={GetStarted} options={{ headerShown: false }} />
+            <RootStack.Screen name="GetStarted2" component={GetStarted2} options={{ headerShown: false }} />
           </RootStack.Group>
         </RootStack.Navigator>
       </NavigationContainer >

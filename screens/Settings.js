@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, TouchableOpacity, Button, TextInput } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Button, TextInput, Alert } from "react-native";
 import { Event, EventTime } from "../models/Event";
 import { FontAwesome6 } from '@expo/vector-icons';
 import SharedStyle from "../Style";
@@ -6,6 +6,9 @@ import { SharedContext } from "../SharedContext";
 import { useContext, useState, useEffect } from "react";
 import { SaveWeight, SaveHeight } from "../store/PersonalSettings";
 import RNPickerSelect from "react-native-picker-select";
+import { AllKeys } from "../consts/Storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Updates from 'expo-updates';
 
 function ManagePersonalSettings() {
   const { weightKg, setWeightKg, heightCm, setHeightCm, setHeightMetric, setWeightMetric } = useContext(SharedContext);
@@ -118,6 +121,30 @@ export default function Settings({ navigation }) {
       <TouchableOpacity style={{ ...SharedStyle.shadowButton, ...styles.button }} onPress={() => navigation.navigate("ManagePersonalSettings")}>
         <FontAwesome6 name="user" size={30} color="black" />
         <Text style={styles.buttonText}>Personal settings</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{ ...SharedStyle.shadowButton, ...styles.button }}
+        onPress={() => {
+          Alert.alert(
+            "Alert",
+            "This will delete all data. Are you sure you want to continue?",
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Confirm", onPress: () => {
+                  AllKeys.forEach((key) => {
+                    console.log("deleting key: " + key);
+                    AsyncStorage.removeItem(key).then().catch((e) => console.error(`error deleting key: ${key}: ${e}`));
+                  });
+
+                  (async () => await Updates.reloadAsync())();
+                }
+              }
+            ]
+          )
+        }}>
+        <FontAwesome6 name="trash-alt" size={30} color="red" />
+        <Text style={{ ...styles.buttonText, color: "red" }}>Delete data</Text>
       </TouchableOpacity>
       <Test />
     </View >

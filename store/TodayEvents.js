@@ -1,8 +1,7 @@
 import { FromStorage, ToStorage } from "../utils/Storage";
 import { DateEqualsWithoutTime } from "../utils/Time";
 import { CopyEventTime } from "../models/Event";
-
-const TodayEventsKey = "today-events";
+import { TodayEventsKey } from "../consts/Storage";
 
 function UpdateTodayEvents(todayEvents, setTodayEvents, events) {
   if (events === undefined) return;

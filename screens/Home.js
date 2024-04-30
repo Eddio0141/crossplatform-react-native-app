@@ -8,7 +8,7 @@ import { Weather } from "../components/Weather";
 import SharedStyle from "../Style";
 import { SharedContext } from "../SharedContext";
 import { Pedometer } from "expo-sensors";
-import { StepsTodayKey } from "../consts/Storage";
+import { StepsTodayKey, ExerciseTodayKey, CaloriesTodayKey } from "../consts/Storage";
 
 function SummaryBar() {
   // TODO: make this args
@@ -53,7 +53,7 @@ function SummaryBar() {
   if (calories === undefined) {
     async function getData() {
       try {
-        const caloriesTodayData = await AsyncStorage.getItem("calories-today");
+        const caloriesTodayData = await AsyncStorage.getItem(CaloriesTodayKey);
 
         if (caloriesTodayData !== null) {
           setCalories(caloriesTodayData);
@@ -61,7 +61,7 @@ function SummaryBar() {
           setCalories(0);
         }
 
-        const exerciseTodayData = await AsyncStorage.getItem("exercise-today");
+        const exerciseTodayData = await AsyncStorage.getItem(ExerciseTodayKey);
 
         if (exerciseTodayData !== null) {
           setExercise(exerciseTodayData);

@@ -19,6 +19,7 @@
           packages = with pkgs; [
             android-studio
             nodejs
+            nodePackages.eas-cli
           ];
 
           ANDROID_HOME = "/home/yuu/Android/Sdk";

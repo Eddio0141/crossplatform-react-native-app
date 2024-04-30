@@ -15,7 +15,7 @@ import { FromStorage } from "./utils/Storage";
 import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
 import * as Notifications from "expo-notifications";
-import { CurrentEventKey, WelcomedKey } from "./consts/Storage";
+import { CurrentEventKey, WelcomedKey, EventsKey } from "./consts/Storage";
 import { CopyEventTime } from "./models/Event";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ManageActivities from "./screens/ManageActivities";
@@ -100,7 +100,7 @@ export default function App() {
   }
 
   if (events === undefined) {
-    FromStorage("events", []).then((eventsDataRaw) => {
+    FromStorage(EventsKey, []).then((eventsDataRaw) => {
       const eventsData = eventsDataRaw.map((event) => {
         const { timeStart, timeEnd } = event;
         return {
@@ -125,8 +125,6 @@ export default function App() {
       // validate
       if (currentEventDataRaw !== null) {
         const today = new Date();
-        console.log(typeof currentEventDataRaw.timeStart.timeLessThanDate);
-        console.log(currentEventDataRaw.timeStart);
         const { timeStart, timeEnd } = currentEventDataRaw;
         const currentEventData = {
           ...currentEventDataRaw,

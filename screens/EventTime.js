@@ -10,7 +10,7 @@ const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
 
 export default function EventTime({ navigation }) {
   const [timePickerVisible, setTimePickerVisible] = useState(false);
-  const [day, setDay] = useState(null);
+  const [day, setDay] = useState(0);
   const [time, setTime] = useState(new Date());
   const [duration, setDuration] = useState(10);
   const [durationText, setDurationText] = useState("10");

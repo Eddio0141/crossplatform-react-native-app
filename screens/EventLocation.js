@@ -5,6 +5,8 @@ import { useState, useEffect, useContext } from "react";
 import * as Location from "expo-location";
 import { AddActivityContext, SharedContext } from "../SharedContext";
 import { Event } from "../models/Event";
+import { ToStorage } from "../utils/Storage";
+import { EventsKey } from "../consts/Storage";
 
 export default function EventLocation({ navigation }) {
   const [marker, setMarker] = useState(null);
@@ -78,7 +80,9 @@ export default function EventLocation({ navigation }) {
           if (e.timeStart.hour < event.timeStart.hour) return false;
           return e.timeStart.minute > event.timeStart.minute;
         });
+
         setEvents([...events.slice(0, insertIndex), event, ...events.slice(insertIndex)]);
+        ToStorage(EventsKey, events);
 
         navigation.navigate(eventSetup.navigationStart);
       }} />

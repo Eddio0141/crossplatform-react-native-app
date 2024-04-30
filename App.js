@@ -27,6 +27,7 @@ import { View } from "react-native";
 import { ToStorage } from "./utils/Storage";
 import EventSetup from "./screens/EventSetup";
 import EventTime from "./screens/EventTime";
+import EventLocation from "./screens/EventLocation";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -303,6 +304,7 @@ export default function App() {
               <RootStack.Screen name="GetStarted2" component={GetStarted2} options={{ headerShown: false }} />
               <RootStack.Screen name="EventSetup" component={EventSetup} options={{ headerTitle: "Add activity" }} />
               <RootStack.Screen name="EventTime" component={EventTime} options={{ headerTitle: "Activity time" }} />
+              <RootStack.Screen name="EventLocation" component={EventLocation} options={{ headerTitle: "Location" }} />
             </RootStack.Group>
           </RootStack.Navigator>
         </NavigationContainer >

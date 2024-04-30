@@ -10,7 +10,7 @@ const exercises = [
 ];
 
 export default function EventSetup({ navigation }) {
-  const { setEventSetup } = useContext(AddActivityContext);
+  const { eventSetup, setEventSetup } = useContext(AddActivityContext);
 
   return (
     <View style={SharedStyle.container}>
@@ -22,7 +22,7 @@ export default function EventSetup({ navigation }) {
               key={index}
               style={{ flexDirection: "row", alignItems: "center" }}
               onPress={() => {
-                setEventSetup({ activity: exercise.name });
+                setEventSetup({ ...eventSetup, activity: exercise.name });
                 navigation.navigate("EventTime");
               }}
             >

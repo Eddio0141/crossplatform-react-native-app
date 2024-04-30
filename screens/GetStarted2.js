@@ -1,7 +1,6 @@
 import { Text, View, TouchableOpacity } from "react-native";
 import SharedStyle from "../Style";
 import { ManagePersonalSettings } from "../screens/Settings";
-import { ToStorage } from "../utils/Storage";
 import { WelcomedKey } from "../consts/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 

@@ -8,38 +8,61 @@ import { SaveWeight, SaveHeight } from "../store/PersonalSettings";
 import RNPickerSelect from "react-native-picker-select";
 import { AllKeys } from "../consts/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Updates from 'expo-updates';
+import * as Updates from "expo-updates";
+import { CentimeterToFeet, KgToPound } from "../consts/MetricConversion";
 
 function ManagePersonalSettings() {
-  const { weightKg, setWeightKg, heightCm, setHeightCm, setHeightMetric, setWeightMetric } = useContext(SharedContext);
+  const { weightKg, setWeightKg, heightCm, setHeightCm, setHeightMetric, setWeightMetric, heightMetric, weightMetric } = useContext(SharedContext);
 
   const [weightKgText, setWeightKgText] = useState("0");
   const [heightCmText, setHeightCmText] = useState("0");
 
   useEffect(() => {
-    setWeightKgText(weightKg.toString());
+    setWeightKgText(weightKg.toFixed(2));
   }, [weightKg]);
 
   useEffect(() => {
-    setHeightCmText(heightCm.toString());
+    setHeightCmText(heightCm.toFixed(2));
   }, [heightCm]);
 
   return (
     <View>
       <RNPickerSelect
-        onValueChange={(value) => setWeightMetric(value)}
+        onValueChange={(value) => {
+          if (value === weightMetric) return;
+
+          console.log(`changing weight metric from ${weightMetric} to ${value}`);
+          if (value === "kg") {
+            setWeightKg(weightKg / KgToPound);
+          } else {
+            setWeightKg(weightKg * KgToPound);
+          }
+
+          setWeightMetric(value);
+        }}
         placeholder={{ label: "Weight metric", value: null }}
         items={[
           { label: "kg", value: "kg" },
-          { label: "stone", value: "stone" },
+          { label: "pound", value: "pound" },
         ]}
       />
       <RNPickerSelect
-        onValueChange={(value) => setHeightMetric(value)}
+        onValueChange={(value) => {
+          if (value === heightMetric) return;
+
+          // change metric
+          console.log(`changing height metric from ${heightMetric} to ${value}`);
+          if (value === "cm") {
+            setHeightCm(heightCm / CentimeterToFeet);
+          } else {
+            setHeightCm(heightCm * CentimeterToFeet);
+          }
+          setHeightMetric(value);
+        }}
         placeholder={{ label: "Height metric", value: null }}
         items={[
           { label: "cm", value: "cm" },
-          { label: "foot", value: "foot" },
+          { label: "feet", value: "ft" },
         ]}
       />
       <View style={styles.weightHeightContainer}>
@@ -53,12 +76,12 @@ function ManagePersonalSettings() {
             if (weightKgText === "") {
               setWeightKgText(weightKg.toString());
             }
-            const num = parseInt(weightKgText);
+            const num = Math.abs(parseFloat(weightKgText));
             if (isNaN(num)) return;
             setWeightKg(num);
             SaveWeight(num);
           }} />
-        <Text style={styles.weightHeightFont}>kg</Text>
+        <Text style={styles.weightHeightFont}>{weightMetric}</Text>
       </View>
       <View style={styles.weightHeightContainer}>
         <Text style={{ ...styles.weightHeightFont, marginRight: 5, flex: 1 }}>Height</Text>
@@ -69,14 +92,14 @@ function ManagePersonalSettings() {
           onChangeText={(text) => setHeightCmText(text)}
           onEndEditing={() => {
             if (heightCmText === "") {
-              heightCmText(heightCm.toString());
+              setHeightCmText(heightCm.toString());
             }
-            const num = parseInt(heightCmText);
+            const num = Math.abs(parseFloat(heightCmText));
             if (isNaN(num)) return;
             setHeightCm(num);
             SaveHeight(num);
           }} />
-        <Text style={styles.weightHeightFont}>cm</Text>
+        <Text style={styles.weightHeightFont}>{heightMetric}</Text>
       </View>
     </View>
   );

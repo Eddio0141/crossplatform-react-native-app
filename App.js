@@ -77,6 +77,7 @@ export default function App() {
   const [todayEvents, setTodayEvents] = useState(undefined);
   const [currentEvent, setCurrentEvent] = useState(undefined);
   const [reminderShow, setReminderShow] = useState(false);
+  const [settingUp, setSettingUp] = useState(false);
 
   const [weightKg, setWeightKg] = useState(undefined);
   const [heightCm, setHeightCm] = useState(undefined);
@@ -85,17 +86,11 @@ export default function App() {
 
   if (weightKg === undefined) {
     LoadWeight(setWeightKg);
+    LoadWeightMetric(setWeightMetric);
   }
 
   if (heightCm === undefined) {
     LoadHeight(setHeightCm);
-  }
-
-  if (weightMetric === undefined) {
-    LoadWeightMetric(setWeightMetric);
-  }
-
-  if (heightMetric === undefined) {
     LoadHeightMetric(setHeightMetric);
   }
 
@@ -165,11 +160,14 @@ export default function App() {
 
   const AppRoot = ({ navigation }) => {
     // have we welcomed the user?
-    FromStorage(WelcomedKey, false).then((welcomed) => {
-      if (!welcomed) {
-        navigation.navigate("Welcome");
-      }
-    });
+    if (!settingUp) {
+      FromStorage(WelcomedKey, false).then((welcomed) => {
+        if (!welcomed) {
+          navigation.navigate("Welcome");
+          setSettingUp(true);
+        }
+      });
+    }
 
     // handle reminder notifications
     useEffect(() => ReminderCheck(todayEvents, setTodayEvents, reminderShow, setReminderShow, navigation), [todayEvents]);

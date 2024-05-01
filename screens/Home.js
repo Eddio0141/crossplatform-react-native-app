@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import HLine from "../components/HLine";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Feather from "@expo/vector-icons/Feather";
@@ -11,6 +11,7 @@ import { Pedometer } from "expo-sensors";
 import { StepsTodayKey, CaloriesTodayKey } from "../consts/Storage";
 import { CentimeterToFeet, KgToPound } from "../consts/MetricConversion";
 import { ToStorage } from "../utils/Storage";
+import { OpenMaps } from "../utils/External";
 
 function SummaryBar() {
   // TODO: make this args
@@ -122,7 +123,7 @@ function Upcoming() {
             <Text style={{ ...styles.upcomingSpace, fontSize: 18 }}>
               {upcoming.activity}
             </Text>
-            <Navigation style={styles.upcomingSpace} />
+            <Navigation style={styles.upcomingSpace} event={upcoming} />
             <Weather event={upcoming} />
           </View>
         )
@@ -168,7 +169,7 @@ function CurrentEvent({ currentEvent }) {
               <Text style={styles.eventText}>{FormatTime(currentEvent.timeEnd)}</Text>
             </View>
             <View style={{ justifyContent: "space-evenly" }}>
-              <Navigation />
+              <Navigation event={currentEvent} />
               <Weather event={currentEvent} />
             </View>
           </View>
@@ -203,12 +204,15 @@ export default function Home({ currentEvent }) {
   );
 }
 
-function Navigation({ style }) {
+function Navigation({ style, event }) {
   return (
-    <View style={{ ...styles.iconTextContainer, ...style }}>
+    <TouchableOpacity
+      style={{ ...styles.iconTextContainer, ...style }}
+      onPress={() => OpenMaps(event.lat, event.lon)}
+    >
       <Feather name="map-pin" size={24} color="black" />
       <Text style={{ ...styles.eventText, marginLeft: 5 }}>Navigation</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 

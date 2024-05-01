@@ -1,10 +1,11 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { useContext, useState, useEffect } from "react";
 import { SharedContext } from "../SharedContext";
 import { Feather } from "@expo/vector-icons";
 import SharedStyle from "../Style";
 import { Weather } from "../components/Weather";
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { OpenMaps } from "../utils/External";
 
 export default function Activity() {
   const { currentEvent } = useContext(SharedContext);
@@ -58,10 +59,13 @@ export default function Activity() {
           )
         }
       </AnimatedCircularProgress>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <TouchableOpacity
+        style={{ flexDirection: "row", alignItems: "center" }}
+        onPress={() => OpenMaps(currentEvent.lat, currentEvent.lon)}
+      >
         <Feather name="map-pin" size={35} color="black" style={{ marginRight: 10 }} />
         <Text style={{ fontSize: 20 }}>Navigation</Text>
-      </View>
+      </TouchableOpacity>
     </View >
   );
 }

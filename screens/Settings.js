@@ -6,7 +6,6 @@ import { SharedContext } from "../SharedContext";
 import { useContext, useState, useEffect } from "react";
 import { SaveWeight, SaveHeight } from "../store/PersonalSettings";
 import RNPickerSelect from "react-native-picker-select";
-import { AllKeys } from "../consts/Storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Updates from "expo-updates";
 import { CentimeterToFeet, KgToPound } from "../consts/MetricConversion";
@@ -158,12 +157,10 @@ export default function Settings({ navigation }) {
               { text: "Cancel", style: "cancel" },
               {
                 text: "Confirm", onPress: () => {
-                  AllKeys.forEach((key) => {
-                    console.log("deleting key: " + key);
-                    AsyncStorage.removeItem(key).then().catch((e) => console.error(`error deleting key: ${key}: ${e}`));
-                  });
-
-                  (async () => await Updates.reloadAsync())();
+                  (async () => {
+                    await AsyncStorage.clear();
+                    await Updates.reloadAsync();
+                  })();
                 }
               }
             ]

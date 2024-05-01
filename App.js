@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Feather from "@expo/vector-icons/Feather";
 import Home from "./screens/Home";
-import Calendar from "./screens/Calendar";
+import CalendarView, { CalendarFocus } from "./screens/Calendar";
 import Weather from "./screens/Weather";
 import Settings, { ManagePersonalSettings } from "./screens/Settings";
 import Reminder from "./screens/Reminder";
@@ -252,7 +252,7 @@ export default function App() {
           ),
           headerShown: false,
         }} />
-        <Tab.Screen name="Calendar" component={Calendar} options={{
+        <Tab.Screen name="Calendar" component={CalendarView} options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="calendar" color={color} size={size} />
           ),
@@ -331,6 +331,7 @@ export default function App() {
               <RootStack.Screen name="EventSetup" component={EventSetup} options={{ headerTitle: "Add activity" }} />
               <RootStack.Screen name="EventTime" component={EventTime} options={{ headerTitle: "Activity time" }} />
               <RootStack.Screen name="EventLocation" component={EventLocation} options={{ headerTitle: "Location" }} />
+              <RootStack.Screen name="CalendarFocus" component={CalendarFocus} options={{ headerTitle: "" }} />
             </RootStack.Group>
           </RootStack.Navigator>
         </NavigationContainer >

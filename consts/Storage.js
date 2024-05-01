@@ -12,15 +12,8 @@ const HeightMetricKey = "heightMetric";
 const ExerciseTodayKey = "exercise-today";
 const CaloriesTodayKey = "calories-today";
 
-const AllKeys = [
-  WeightKey, HeightKey, WeightMetricKey, HeightMetricKey,
-  EventsKey, CurrentEventKey, StepsTodayKey, WelcomedKey, TodayEventsKey,
-  ExerciseTodayKey, CaloriesTodayKey
-];
-
 export {
   WeightKey, HeightKey, WeightMetricKey, HeightMetricKey,
   EventsKey, CurrentEventKey, StepsTodayKey, WelcomedKey,
-  TodayEventsKey, ExerciseTodayKey, CaloriesTodayKey,
-  AllKeys
+  TodayEventsKey, ExerciseTodayKey, CaloriesTodayKey
 };

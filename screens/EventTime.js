@@ -9,20 +9,24 @@ import { EventTime as Et } from "../models/Event";
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export default function EventTime({ navigation }) {
+  const { eventSetup, setEventSetup } = useContext(AddActivityContext);
+
   const [timePickerVisible, setTimePickerVisible] = useState(false);
   const today = new Date();
-  const [day, setDay] = useState(today.getDay());
-  const [time, setTime] = useState(today);
-  const [duration, setDuration] = useState(10);
-  const [durationText, setDurationText] = useState("10");
-  const [remindMinutes, setRemindMinutes] = useState(15);
-  const [remindMinutesText, setRemindMinutesText] = useState("15");
+  const [day, setDay] = useState(eventSetup?.timeStart?.day ?? today.getDay());
+  const [time, setTime] = useState(
+    eventSetup?.timeStart === undefined ?
+      today :
+      new Date(today.getFullYear(), today.getMonth(), today.getDate(), eventSetup.timeStart.hour, eventSetup.timeStart.minute)
+  );
+  const [duration, setDuration] = useState(eventSetup?.duration ?? 10);
+  const [durationText, setDurationText] = useState(duration.toString());
+  const [remindMinutes, setRemindMinutes] = useState(eventSetup?.remindMinutes ?? 15);
+  const [remindMinutesText, setRemindMinutesText] = useState(remindMinutes.toString());
 
   const hours = time.getHours();
   const minutes = time.getMinutes().toString().padStart(2, "0");
   const amPm = hours < 12 ? "AM" : "PM";
-
-  const { eventSetup, setEventSetup } = useContext(AddActivityContext);
 
   return (
     <View style={SharedStyle.container}>
@@ -67,7 +71,7 @@ export default function EventTime({ navigation }) {
           style={{ ...SharedStyle.textInput, ...styles.textInputFont, marginRight: 5 }}
           keyboardType="numeric"
           value={remindMinutesText}
-          onChangeText={(text) => setDurationText(text)}
+          onChangeText={(text) => setRemindMinutesText(text)}
           onEndEditing={() => {
             if (remindMinutesText === "") {
               setRemindMinutesText(remindMinutes.toString());
@@ -94,18 +98,30 @@ export default function EventTime({ navigation }) {
         }
       />
       <View style={{ flex: 0.1 }} />
-      <Button title="Continue" onPress={() => {
+      <TouchableOpacity onPress={() => {
         console.log(`Day: ${day}, Time: ${time}, Duration: ${duration}, Remind: ${remindMinutes}`);
         const timeStart = new Et(day, time.getHours(), time.getMinutes());
         setEventSetup({ ...eventSetup, timeStart, duration, remindMinutes });
         navigation.navigate("EventLocation");
-      }} />
+      }}
+        style={styles.continueSkipButton}
+      >
+        <Text style={styles.continueSkipText}>Continue</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   textInputFont: {
+    fontSize: 25
+  },
+  continueSkipButton: {
+    ...SharedStyle.shadowButton,
+    paddingVertical: 5,
+    paddingHorizontal: 10
+  },
+  continueSkipText: {
     fontSize: 25
   }
 });

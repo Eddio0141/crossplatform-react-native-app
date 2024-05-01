@@ -19,6 +19,7 @@ export default SharedStyle = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     backgroundColor: "white",
+    borderWidth: 0.5,
 
     // shadow
     shadowColor: "#000",

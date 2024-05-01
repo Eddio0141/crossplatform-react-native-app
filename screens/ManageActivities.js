@@ -5,11 +5,13 @@ import { Feather } from "@expo/vector-icons";
 import { FormatTime } from "../utils/Time";
 import HLine from "../components/HLine";
 import { SharedContext, AddActivityContext } from "../SharedContext";
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 
 const dayText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-function RenderDay(day, eventsFiltered, lastIndex, index, events, setEvents) {
+function RenderDay(setEventSetupEnabled, day, eventsFiltered, lastIndex, index, events, setEvents) {
+  const { setEventSetup } = useContext(AddActivityContext);
+
   const iconSize = 25;
   return (
     <View key={index} style={{ marginLeft: "7%" }}>
@@ -20,7 +22,13 @@ function RenderDay(day, eventsFiltered, lastIndex, index, events, setEvents) {
         eventsFiltered.map((event, index) => (
           <View key={index} style={{ flexDirection: "row", marginBottom: 15 }}>
             <View style={{ alignSelf: "flex-start" }}>
-              <TouchableOpacity style={{ ...SharedStyle.shadowButton, ...styles.button }}>
+              <TouchableOpacity
+                style={{ ...SharedStyle.shadowButton, ...styles.button }}
+                onPress={() => {
+                  setEventSetup({ ...event, navigationStart: "ManageActivities" });
+                  setEventSetupEnabled(true);
+                }}
+              >
                 <FontAwesome6 name="edit" style={styles.buttonFont} size={iconSize} color="black" />
                 <Text>Edit</Text>
               </TouchableOpacity>
@@ -61,6 +69,14 @@ function RenderDay(day, eventsFiltered, lastIndex, index, events, setEvents) {
 export default function ManagedActivities({ navigation }) {
   const { events, setEvents } = useContext(SharedContext);
   const { setEventSetup } = useContext(AddActivityContext);
+  const [eventSetupEnabled, setEventSetupEnabled] = useState(false);
+
+  useEffect(() => {
+    if (eventSetupEnabled) {
+      setEventSetupEnabled(false);
+      navigation.navigate("EventSetup");
+    }
+  }, [eventSetupEnabled]);
 
   let lastIndex = 0;
   // TODO: performance can be better by replacing scrollview
@@ -93,7 +109,7 @@ export default function ManagedActivities({ navigation }) {
               return returnObj;
             })
             .filter(({ eventsFiltered }) => eventsFiltered.length > 0)
-            .map(({ day, eventsFiltered, lastIndex }, index) => RenderDay(day, eventsFiltered, lastIndex, index, events, setEvents))
+            .map(({ day, eventsFiltered, lastIndex }, index) => RenderDay(setEventSetupEnabled, day, eventsFiltered, lastIndex, index, events, setEvents))
         }
       </ScrollView>
     </View>

@@ -9,12 +9,16 @@ import { ToStorage } from "../utils/Storage";
 import { EventsKey } from "../consts/Storage";
 
 export default function EventLocation({ navigation }) {
-  const [marker, setMarker] = useState(null);
-  const [initialLat, setInitialLat] = useState(undefined);
-  const [initialLon, setInitialLon] = useState(undefined);
-
   const { eventSetup } = useContext(AddActivityContext);
   const { events, setEvents } = useContext(SharedContext);
+
+  const [marker, setMarker] = useState(
+    eventSetup.lat === undefined ?
+      null :
+      { latitude: eventSetup.lat, longitude: eventSetup.lon }
+  );
+  const [initialLat, setInitialLat] = useState(undefined);
+  const [initialLon, setInitialLon] = useState(undefined);
 
   useEffect(() => {
     (async () => {
@@ -73,20 +77,35 @@ export default function EventLocation({ navigation }) {
         // construct the full event object finally
         const event = new Event(eventSetup.timeStart, eventSetup.duration, eventSetup.remindMinutes, eventSetup.activity, latitude, longitude);
 
-        const foundIndex = events.findIndex((e) => {
-          if (e.timeStart.day > event.timeStart.day) return true;
-          if (e.timeStart.day < event.timeStart.day) return false;
-          if (e.timeStart.hour > event.timeStart.hour) return true;
-          if (e.timeStart.hour < event.timeStart.hour) return false;
-          return e.timeStart.minute > event.timeStart.minute;
-        });
+        // are we updating an existing event?
+        if (eventSetup.uuid === undefined) {
+          // no
+          const foundIndex = events.findIndex((e) => {
+            if (e.timeStart.day > event.timeStart.day) return true;
+            if (e.timeStart.day < event.timeStart.day) return false;
+            if (e.timeStart.hour > event.timeStart.hour) return true;
+            if (e.timeStart.hour < event.timeStart.hour) return false;
+            return e.timeStart.minute > event.timeStart.minute;
+          });
 
-        const eventsLen = events?.length ?? 0;
-        const insertIndex = foundIndex < 0 ? eventsLen : foundIndex;
+          const eventsLen = events?.length ?? 0;
+          const insertIndex = foundIndex < 0 ? eventsLen : foundIndex;
 
-        console.log(`Inserting at index ${insertIndex}`);
+          console.log(`Inserting at index ${insertIndex}`);
 
-        setEvents([...events.slice(0, insertIndex), event, ...events.slice(insertIndex)]);
+          setEvents([...events.slice(0, insertIndex), event, ...events.slice(insertIndex)]);
+        } else {
+          const editIndex = events.findIndex((e) => e.uuid === eventSetup.uuid);
+
+          if (editIndex < 0) {
+            console.error("Could not find event to edit!");
+            navigation.navigate(eventSetup.navigationStart);
+            return;
+          }
+
+          setEvents([...events.slice(0, editIndex), event, ...events.slice(editIndex + 1)]);
+        }
+
         ToStorage(EventsKey, events);
 
         navigation.navigate(eventSetup.navigationStart);

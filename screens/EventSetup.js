@@ -11,11 +11,13 @@ const exercises = [
 
 export default function EventSetup({ navigation }) {
   const { eventSetup, setEventSetup } = useContext(AddActivityContext);
+  // for editing existing events
+  const skippable = eventSetup.activity !== undefined;
 
   return (
     <View style={SharedStyle.container}>
       <Text style={{ fontSize: 40, marginBottom: 20 }}>Select Category</Text>
-      <View style={{ alignItems: "flex-end" }}>
+      <View style={{ alignItems: "flex-end", marginBottom: 15 }}>
         {
           exercises.map((exercise, index) => (
             <TouchableOpacity
@@ -32,6 +34,16 @@ export default function EventSetup({ navigation }) {
           ))
         }
       </View>
+      {
+        skippable ?
+          <TouchableOpacity
+            style={{ ...SharedStyle.shadowButton, paddingVertical: 5, paddingHorizontal: 10 }}
+            onPress={() => navigation.navigate("EventTime")}
+          >
+            <Text style={{ fontSize: 30 }}>Skip</Text>
+          </TouchableOpacity>
+          : null
+      }
     </View>
   );
 }

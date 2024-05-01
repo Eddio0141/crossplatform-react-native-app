@@ -10,8 +10,9 @@ const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
 
 export default function EventTime({ navigation }) {
   const [timePickerVisible, setTimePickerVisible] = useState(false);
-  const [day, setDay] = useState(0);
-  const [time, setTime] = useState(new Date());
+  const today = new Date();
+  const [day, setDay] = useState(today.getDay());
+  const [time, setTime] = useState(today);
   const [duration, setDuration] = useState(10);
   const [durationText, setDurationText] = useState("10");
   const [remindMinutes, setRemindMinutes] = useState(15);
@@ -87,7 +88,7 @@ export default function EventTime({ navigation }) {
           console.log(`Day of week: ${value}, index: ${index}`);
           setDay(index);
         }}
-        placeholder={{ label: "Day of week", value: days[0] }}
+        placeholder={{ label: "Day of week", value: days[time.getDay()] }}
         items={
           days.map((day) => { return { label: day, value: day } })
         }

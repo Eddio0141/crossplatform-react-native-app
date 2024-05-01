@@ -92,7 +92,7 @@ function SummaryBar() {
 
   return (
     <View style={styles.summaryBar}>
-      <Text style={styles.summaryText}>🔥 {calories?.toFixed(2)} calories burnt</Text>
+      <Text style={styles.summaryText}>🔥 {Math.round(calories)} calories burnt</Text>
       <Text style={styles.summaryText}>🕖 {exercise} mins of exercise</Text>
       {
         renderSteps ? <Text style={styles.summaryText}>🚶 {steps} steps</Text> : null

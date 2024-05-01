@@ -18,12 +18,15 @@ function ManagePersonalSettings() {
   const [heightCmText, setHeightCmText] = useState("0");
 
   useEffect(() => {
-    setWeightKgText(weightKg.toFixed(2));
-  }, [weightKg]);
+    // kg wouldn't have decimal places
+    const fixedLen = weightMetric === "kg" ? 0 : 1;
+    setWeightKgText(weightKg.toFixed(fixedLen));
+  }, [weightKg, weightMetric]);
 
   useEffect(() => {
-    setHeightCmText(heightCm.toFixed(2));
-  }, [heightCm]);
+    const fixedLen = heightMetric === "cm" ? 0 : 2;
+    setHeightCmText(heightCm.toFixed(fixedLen));
+  }, [heightCm, heightMetric]);
 
   return (
     <View>

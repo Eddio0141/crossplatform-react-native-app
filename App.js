@@ -96,34 +96,28 @@ export default function App() {
 
   // only read from storage when nessesary
   if (calories === undefined) {
-    async function getData() {
-      try {
-        const caloriesTodayData = await AsyncStorage.getItem(CaloriesTodayKey);
-
-        if (caloriesTodayData !== null) {
-          setCalories(caloriesTodayData);
-        } else {
-          setCalories(0);
-        }
-
-        const exerciseTodayData = await AsyncStorage.getItem(ExerciseTodayKey);
-
-        if (exerciseTodayData !== null) {
-          setExercise(exerciseTodayData);
-        } else {
-          setExercise(0);
-        }
-      } catch (e) {
-        console.error(`Error getting calories: ${e}`);
-
+    AsyncStorage.getItem(CaloriesTodayKey).then((data) => {
+      if (data === null) {
         setCalories(0);
-        setExercise(0);
+      } else {
+        setCalories(JSON.parse(data));
       }
-    }
+    }).catch((e) => {
+      console.error(`Error getting calories: ${e}`);
+      setCalories(0);
+    });
 
-    getData().then();
+    AsyncStorage.getItem(ExerciseTodayKey).then((data) => {
+      if (data === null) {
+        setExercise(0);
+      } else {
+        setExercise(JSON.parse(data));
+      }
+    }).catch((e) => {
+      console.error(`Error getting exercise: ${e}`);
+      setExercise(0);
+    });
   }
-
 
   if (weightKg === undefined) {
     LoadWeight(setWeightKg);

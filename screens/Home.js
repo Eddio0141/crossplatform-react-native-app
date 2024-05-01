@@ -14,7 +14,6 @@ import { ToStorage } from "../utils/Storage";
 import { OpenMaps } from "../utils/External";
 
 function SummaryBar() {
-  // TODO: make this args
   const [renderSteps, setRenderSteps] = useState(false);
 
   const { weightMetric, heightMetric, weightKg, heightCm, exercise, calories, steps, setSteps, setCalories } = useContext(SharedContext);

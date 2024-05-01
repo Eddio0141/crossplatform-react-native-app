@@ -96,7 +96,6 @@ export default function Weather() {
   const sizeMain = 80;
   const sizeEvent = 40;
 
-  // TODO: main icon needs space above i think
   return (
     <View style={SharedStyle.container}>
       <View style={{ height: "5%" }} />

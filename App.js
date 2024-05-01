@@ -28,6 +28,7 @@ import { ToStorage } from "./utils/Storage";
 import EventSetup from "./screens/EventSetup";
 import EventTime from "./screens/EventTime";
 import EventLocation from "./screens/EventLocation";
+import { KgToPound } from "./consts/MetricConversion";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -189,6 +190,35 @@ export default function App() {
         // add minutes of exercise done
         const totalExercise = exercise + currentEvent.duration;
         setExercise(totalExercise);
+
+        // calculate calories burnt
+        let caloriesBurnt = 0;
+        let weightKgActual;
+        if (weightMetric === "kg") {
+          weightKgActual = weightKg;
+        } else {
+          weightKgActual = weightKg / KgToPound;
+        }
+        if (currentEvent.activity === "Jogging") {
+          // https://captaincalculator.com/health/calorie/calories-burned-jogging-calculator/
+          const met = 7;
+          caloriesBurnt = (met * weightKgActual) / 200 * currentEvent.duration;
+        } else if (currentEvent.activity === "Swimming") {
+          // https://www.omnicalculator.com/sports/swimming-calorie
+          // assuming side stroke (7 MET)
+          const met = 7;
+          caloriesBurnt = (met * weightKgActual * 3.5) / 200 * currentEvent.duration;
+        } else if (currentEvent.activity === "Cycling") {
+          // https://www.omnicalculator.com/sports/calories-burned-biking
+          // average 8 to 8.5 MET
+          const met = 8;
+          caloriesBurnt = currentEvent.duration * met * 3.5 * weightKgActual / 200;
+        }
+
+        const totalCalories = calories + caloriesBurnt;
+        setCalories(totalCalories);
+        ToStorage(CaloriesTodayKey, totalCalories);
+
         ToStorage(ExerciseTodayKey, totalExercise);
         setCurrentEvent(null);
         // remove current event from storage

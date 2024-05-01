@@ -4,7 +4,7 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { FormatTime } from "../utils/Time";
 import HLine from "../components/HLine";
-import { SharedContext } from "../SharedContext";
+import { SharedContext, AddActivityContext } from "../SharedContext";
 import { useContext } from "react";
 
 const dayText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -60,6 +60,7 @@ function RenderDay(day, eventsFiltered, lastIndex, index, events, setEvents) {
 
 export default function ManagedActivities({ navigation }) {
   const { events, setEvents } = useContext(SharedContext);
+  const { setEventSetup } = useContext(AddActivityContext);
 
   let lastIndex = 0;
   // TODO: performance can be better by replacing scrollview
@@ -67,7 +68,7 @@ export default function ManagedActivities({ navigation }) {
     <View style={{ ...SharedStyle.container, alignSelf: "flex-start", width: "100%" }}>
       <View style={{ marginBottom: 7 }} />
       <Button title="Add Activity" onPress={() => {
-        setEvents({ navigationStart: "ManagedActivities" });
+        setEventSetup({ navigationStart: "ManageActivities" });
         navigation.navigate("EventSetup");
       }} />
       <View style={{ marginBottom: 5 }} />
@@ -78,7 +79,9 @@ export default function ManagedActivities({ navigation }) {
           // iterator for 7 days
           [...Array(7).keys()]
             .map((day) => {
-              const eventsFiltered = events?.filter((event) => event.timeStart.day === day) ?? [];
+              const eventsFiltered =
+                events === undefined || events === null ?
+                  [] : events.filter((event) => event.timeStart.day === day);
               const returnObj = {
                 day: day,
                 eventsFiltered: eventsFiltered,

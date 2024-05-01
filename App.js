@@ -179,7 +179,7 @@ export default function App() {
     const id = setInterval(() => {
       const today = new Date();
       if (currentEvent.timeEnd.day !== today.getDay() ||
-        currentEvent.timeEnd.timeLessThanDate(today)
+        currentEvent.timeEnd.timeLessThanOrEqualDate(today)
       ) {
         // add minutes of exercise done
         const totalExercise = exercise + currentEvent.duration;

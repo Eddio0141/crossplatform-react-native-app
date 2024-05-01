@@ -46,6 +46,10 @@ class EventTime {
     return false;
   }
 
+  timeLessThanOrEqualDate(other) {
+    return this.timeLessThanDate(other) || this.timeEqualDate(other);
+  }
+
   timeMoreThanDate(other) {
     if (this.hour > other.getHours()) return true;
     if (this.hour < other.getHours()) return false;

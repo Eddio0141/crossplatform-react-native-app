@@ -9,9 +9,7 @@ import { useContext, useState, useEffect } from "react";
 
 const dayText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-function RenderDay(setEventSetupEnabled, day, eventsFiltered, lastIndex, index, events, setEvents) {
-  const { setEventSetup } = useContext(AddActivityContext);
-
+function RenderDay(setEventSetup, setEventSetupEnabled, day, eventsFiltered, lastIndex, index, events, setEvents) {
   const iconSize = 25;
   return (
     <View key={index} style={{ marginLeft: "7%" }}>
@@ -109,7 +107,7 @@ export default function ManagedActivities({ navigation }) {
               return returnObj;
             })
             .filter(({ eventsFiltered }) => eventsFiltered.length > 0)
-            .map(({ day, eventsFiltered, lastIndex }, index) => RenderDay(setEventSetupEnabled, day, eventsFiltered, lastIndex, index, events, setEvents))
+            .map(({ day, eventsFiltered, lastIndex }, index) => RenderDay(setEventSetup, setEventSetupEnabled, day, eventsFiltered, lastIndex, index, events, setEvents))
         }
       </ScrollView>
     </View>

@@ -12,7 +12,7 @@ const exercises = [
 export default function EventSetup({ navigation }) {
   const { eventSetup, setEventSetup } = useContext(AddActivityContext);
   // for editing existing events
-  const skippable = eventSetup.activity !== undefined;
+  const skippable = eventSetup.skippable === undefined ? (eventSetup.activity !== undefined) : eventSetup.skippable;
 
   return (
     <View style={SharedStyle.container}>
@@ -24,7 +24,8 @@ export default function EventSetup({ navigation }) {
               key={index}
               style={{ flexDirection: "row", alignItems: "center" }}
               onPress={() => {
-                setEventSetup({ ...eventSetup, activity: exercise.name });
+                // if not skippable, keep it that way with a flag, just copy the flag here
+                setEventSetup({ ...eventSetup, activity: exercise.name, skippable: skippable });
                 navigation.navigate("EventTime");
               }}
             >
@@ -38,7 +39,10 @@ export default function EventSetup({ navigation }) {
         skippable ?
           <TouchableOpacity
             style={{ ...SharedStyle.shadowButton, paddingVertical: 5, paddingHorizontal: 10 }}
-            onPress={() => navigation.navigate("EventTime")}
+            onPress={() => {
+              setEventSetup({ ...eventSetup, skippable: skippable });
+              navigation.navigate("EventTime");
+            }}
           >
             <Text style={{ fontSize: 30 }}>Skip</Text>
           </TouchableOpacity>

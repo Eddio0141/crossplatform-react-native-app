@@ -17,8 +17,9 @@ export default function EventLocation({ navigation }) {
       null :
       { latitude: eventSetup.lat, longitude: eventSetup.lon }
   );
-  const [initialLat, setInitialLat] = useState(undefined);
-  const [initialLon, setInitialLon] = useState(undefined);
+  const [currentLocationMarker, setCurrentLocationMarker] = useState(undefined);
+  const [initialLat, setInitialLat] = useState(eventSetup.lat);
+  const [initialLon, setInitialLon] = useState(eventSetup.lon);
 
   useEffect(() => {
     (async () => {
@@ -26,14 +27,17 @@ export default function EventLocation({ navigation }) {
 
       const { latitude, longitude } = location.coords;
 
-      console.log(`Initial location: lat: ${latitude}, lon: ${longitude}`);
+      console.log(`Current location: lat: ${latitude}, lon: ${longitude}`);
 
-      setInitialLat(latitude);
-      setInitialLon(longitude);
+      setCurrentLocationMarker({ latitude, longitude });
+      if (initialLat === undefined) {
+        setInitialLat(latitude);
+        setInitialLon(longitude);
+      }
     })();
   });
 
-  if (initialLat === undefined || initialLon === undefined) {
+  if (currentLocationMarker === undefined) {
     return (
       <View style={{ ...SharedStyle.container, justifyContent: "center" }}>
         <Text style={{ fontSize: 25 }}>Loading...</Text>
@@ -61,7 +65,7 @@ export default function EventLocation({ navigation }) {
           setMarker({ latitude, longitude });
         }}
       >
-        <Marker coordinate={{ latitude: initialLat, longitude: initialLon }} pinColor="orange" />
+        <Marker coordinate={{ latitude: currentLocationMarker.latitude, longitude: currentLocationMarker.longitude }} pinColor="orange" />
         {
           marker === null ? null : (
             <Marker coordinate={marker} pinColor="red" />

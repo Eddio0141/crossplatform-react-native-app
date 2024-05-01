@@ -41,8 +41,6 @@ const Tab = createBottomTabNavigator();
 const RootStack = createNativeStackNavigator();
 
 function EventsResetMidnight(todayEvents, setTodayEvents, events) {
-  UpdateTodayEvents(todayEvents, setTodayEvents, events);
-
   const id = setInterval(() => {
     if (todayEvents?.date === null || todayEvents?.date === undefined) return;
     const today = new Date();

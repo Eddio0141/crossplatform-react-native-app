@@ -73,13 +73,18 @@ export default function EventLocation({ navigation }) {
         // construct the full event object finally
         const event = new Event(eventSetup.timeStart, eventSetup.duration, eventSetup.remindMinutes, eventSetup.activity, latitude, longitude);
 
-        const insertIndex = events.findIndex((e) => {
+        const foundIndex = events.findIndex((e) => {
           if (e.timeStart.day > event.timeStart.day) return true;
           if (e.timeStart.day < event.timeStart.day) return false;
           if (e.timeStart.hour > event.timeStart.hour) return true;
           if (e.timeStart.hour < event.timeStart.hour) return false;
           return e.timeStart.minute > event.timeStart.minute;
         });
+
+        const eventsLen = events?.length ?? 0;
+        const insertIndex = foundIndex < 0 ? eventsLen : foundIndex;
+
+        console.log(`Inserting at index ${insertIndex}`);
 
         setEvents([...events.slice(0, insertIndex), event, ...events.slice(insertIndex)]);
         ToStorage(EventsKey, events);

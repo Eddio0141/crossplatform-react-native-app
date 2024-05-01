@@ -2,6 +2,7 @@ import { Text, View, TouchableOpacity, Button, Alert } from "react-native";
 import SharedStyle from "../Style";
 import { SharedContext, AddActivityContext } from "../SharedContext";
 import { useContext } from "react";
+import { FormatTime } from "../utils/Time";
 
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -13,10 +14,12 @@ function EventsDisplay() {
   }
 
   return (
-    <View style={{ borderWidth: 1 }}>
+    <View style={{ borderWidth: 1.5, padding: 4 }}>
       {
         events.map((event, index) => (
-          <Text key={index}>{days[event.timeStart.day]}</Text>
+          <Text key={index} style={{ fontSize: 15 }}>
+            {days[event.timeStart.day]} - {FormatTime(event.timeStart)} - {event.activity} - {event.duration} minutes
+          </Text>
         ))
       }
     </View>
@@ -29,7 +32,7 @@ export default function GetStarted({ navigation }) {
   return (
     <View style={SharedStyle.container}>
       <View style={{ flex: 0.15 }} />
-      <Text style={{ fontSize: 35 }}>Add exercises!</Text>
+      <Text style={{ fontSize: 35, marginBottom: 15 }}>Add exercises!</Text>
       <EventsDisplay />
       <View style={{ marginBottom: 10 }} />
       <Button title="Add Exercise" onPress={() => {

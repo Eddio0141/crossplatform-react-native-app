@@ -201,8 +201,12 @@ export default function App() {
     return () => clearInterval(id);
   }, [currentEvent]);
 
-  // handle resetting today events at midnight
-  useEffect(() => EventsResetMidnight(todayEvents, setTodayEvents, events), [events]);
+  // handle resetting today events at midnight, as well as updating today events
+  useEffect(() => {
+    UpdateTodayEvents(todayEvents, setTodayEvents, events);
+
+    return EventsResetMidnight(todayEvents, setTodayEvents, events);
+  }, [events]);
 
   const AppRoot = ({ navigation }) => {
     // have we welcomed the user?

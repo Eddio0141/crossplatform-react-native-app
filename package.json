@@ -12,7 +12,7 @@
     "@expo/ngrok": "^4.1.3",
     "@expo/vector-icons": "^14.0.0",
     "@react-native-async-storage/async-storage": "^1.21.0",
-    "@react-native-community/datetimepicker": "^8.0.0",
+    "@react-native-community/datetimepicker": "7.6.1",
     "@react-native-masked-view/masked-view": "0.3.0",
     "@react-native-picker/picker": "2.6.1",
     "@react-navigation/bottom-tabs": "^6.5.20",
@@ -29,7 +29,7 @@
     "react-native-calendars": "^1.1304.1",
     "react-native-circular-progress": "^1.4.0",
     "react-native-gesture-handler": "~2.14.0",
-    "react-native-maps": "^1.14.0",
+    "react-native-maps": "1.10.0",
     "react-native-picker-select": "^9.1.3",
     "react-native-svg": "14.1.0",
     "react-native-uuid": "^2.0.2"

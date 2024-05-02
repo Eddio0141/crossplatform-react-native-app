@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import HLine from "../components/HLine";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -48,7 +48,7 @@ function SummaryBar() {
     if (stepsSubscribed || canUsePedometer === undefined || !canUsePedometer) return;
     console.log("Pedometer is available");
 
-    const stepWatch = Pedometer.watchStepCount((result) => {
+    Pedometer.watchStepCount((result) => {
       setStepsSubscribed(true);
 
       const total = steps + result.steps;
@@ -81,7 +81,6 @@ function SummaryBar() {
     });
 
     console.log("Starting step watch");
-    // return () => stepWatch.remove();
   }, [canUsePedometer]);
 
   return (

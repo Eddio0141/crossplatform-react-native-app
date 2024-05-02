@@ -15,7 +15,11 @@ import { FromStorage } from "./utils/Storage";
 import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
 import * as Notifications from "expo-notifications";
-import { CurrentEventKey, WelcomedKey, EventsKey, ExerciseTodayKey, CaloriesTodayKey, CalendarCaloriesKey, CalendarEventsKey } from "./consts/Storage";
+import {
+  CurrentEventKey, WelcomedKey, EventsKey,
+  ExerciseTodayKey, CaloriesTodayKey, CalendarCaloriesKey,
+  CalendarEventsKey, StepsTodayKey
+} from "./consts/Storage";
 import { CopyEventTime } from "./models/Event";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ManageActivities from "./screens/ManageActivities";
@@ -118,6 +122,17 @@ export default function App() {
     }).catch((e) => {
       console.error(`Error getting exercise: ${e}`);
       setExercise(0);
+    });
+
+    AsyncStorage.getItem(StepsTodayKey).then((data) => {
+      if (data === null) {
+        setSteps(0);
+      } else {
+        setSteps(JSON.parse(data));
+      }
+    }).catch((e) => {
+      console.error(`Error getting steps: ${e}`);
+      setSteps(0);
     });
   }
 

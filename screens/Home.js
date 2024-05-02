@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import HLine from "../components/HLine";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -17,6 +17,7 @@ import { AddItemToCalendarStorage } from "../store/Calendar";
 function SummaryBar() {
   const { weightMetric, heightMetric, weightKg, heightCm, exercise, calories, steps, setSteps, setCalories } = useContext(SharedContext);
   const [canUsePedometer, setCanUsePedometer] = useState(undefined);
+  const [stepsSubscribed, setStepsSubscribed] = useState(false);
 
   useEffect(() => {
     if (canUsePedometer !== undefined) return;
@@ -39,66 +40,48 @@ function SummaryBar() {
         console.log(`Error requesting pedometer permissions: ${e}`);
       }
 
-      setCanUsePedometer(false);
+      setCanUsePedometer(true);
     })();
   });
 
   useEffect(() => {
-    if (canUsePedometer === undefined || !canUsePedometer) return;
+    if (stepsSubscribed || canUsePedometer === undefined || !canUsePedometer) return;
     console.log("Pedometer is available");
 
-    const stepWatch = async () => {
-      try {
-        const stepsTodayData = await AsyncStorage.getItem(StepsTodayKey);
-        if (stepsTodayData !== null) {
-          setSteps(JSON.parse(stepsTodayData));
-        } else {
-          setSteps(0);
-        }
-      } catch (e) {
-        console.error(`Error getting steps: ${e}`);
-        setSteps(0);
-      }
+    const stepWatch = Pedometer.watchStepCount((result) => {
+      setStepsSubscribed(true);
 
-      console.log("Ready to watch steps");
+      const total = steps + result.steps;
+      setSteps(total);
+      // to storage
+      AsyncStorage.setItem(StepsTodayKey, total.toString()).then();
 
-      return Pedometer.watchStepCount((result) => {
-        console.log(`Steps: ${result.steps}`);
+      // https://www.omnicalculator.com/sports/steps-to-calories
+      // - MET values
+      //   - slow (0.9m/s) = 2.8
+      //   - normal (1.34m/s) = 3.5
+      //   - fast (1.79m/s) = 5
+      // - assuming normal pace
+      const height = (heightMetric === "cm" ? heightCm : heightCm / CentimeterToFeet) / 100;
+      const weight = weightMetric === "kg" ? weightKg : weightKg / KgToPound;
+      const met = 3.5;
 
-        const total = steps + result.steps;
-        setSteps(total);
-        // to storage
-        AsyncStorage.setItem(StepsTodayKey, total.toString()).then();
+      const stride = height * 0.414;
+      const time = result.steps * stride;
 
-        // https://www.omnicalculator.com/sports/steps-to-calories
-        // - MET values
-        //   - slow (0.9m/s) = 2.8
-        //   - normal (1.34m/s) = 3.5
-        //   - fast (1.79m/s) = 5
-        // - assuming normal pace
-        const height = (heightMetric === "cm" ? heightCm : heightCm / CentimeterToFeet) / 100;
-        const weight = weightMetric === "kg" ? weightKg : weightKg / KgToPound;
-        const met = 3.5;
+      const caloriesBurnt = time * met * 3.5 * weight / 12000;
+      console.log(`Calories burnt: ${caloriesBurnt}`);
+      const totalCalories = calories + caloriesBurnt;
 
-        const stride = height * 0.414;
-        const time = result.steps * stride;
+      setCalories(totalCalories);
+      ToStorage(CaloriesTodayKey, totalCalories);
 
-        const caloriesBurnt = time * met * 3.5 * weight / 12000;
-        console.log(`Calories burnt: ${caloriesBurnt}`);
-        const totalCalories = calories + caloriesBurnt;
-
-        setCalories(totalCalories);
-        ToStorage(CaloriesTodayKey, totalCalories);
-
-        AddItemToCalendarStorage(new Date(), "calories", caloriesBurnt);
-        AddItemToCalendarStorage(new Date(), "steps", result.steps);
-      });
-    };
+      AddItemToCalendarStorage(new Date(), "calories", caloriesBurnt);
+      AddItemToCalendarStorage(new Date(), "steps", result.steps);
+    });
 
     console.log("Starting step watch");
-    const subscription = stepWatch();
-
-    return () => subscription.then((e) => e.remove());
+    // return () => stepWatch.remove();
   }, [canUsePedometer]);
 
   return (

@@ -19,12 +19,13 @@ export default function Weather() {
 
   useEffect(() => {
     const weatherUpdate = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-
-      if (status !== "granted") {
-        console.error("Location permission not granted");
-        setCantGetWeather(true);
-        return;
+      const { perms } = Location.getForegroundPermissionsAsync();
+      if (perms !== "granted") {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setCantGetWeather(true);
+          return;
+        }
       }
 
       let location = await Location.getCurrentPositionAsync({});

@@ -39,7 +39,7 @@ function SummaryBar() {
         console.log(`Error requesting pedometer permissions: ${e}`);
       }
 
-      setCanUsePedometer(true);
+      setCanUsePedometer(false);
     })();
   });
 

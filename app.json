@@ -36,7 +36,15 @@
       "eas": {
         "projectId": "d4df0521-5c32-4982-8ada-afca4f8fdd16"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow the app to use your location."
+        }
+      ]
+    ]
   },
   "web": {
     "favicon": "./assets/favicon.png"

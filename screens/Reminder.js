@@ -1,4 +1,4 @@
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, Alert } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import { FormatTime } from "../utils/Time";
 import { Weather } from "../components/Weather";
@@ -9,6 +9,7 @@ import * as Notifications from "expo-notifications";
 import { CurrentEventKey } from "../consts/Storage";
 import { ToStorage } from "../utils/Storage";
 import { TodayEventsToStorage } from "../store/TodayEvents";
+import { CopyEventTime } from "../models/Event";
 
 export default function Reminder({ navigation }) {
   const { todayEvents, setTodayEvents, setCurrentEvent, setReminderShow } = useContext(SharedContext);
@@ -51,15 +52,17 @@ export default function Reminder({ navigation }) {
           navigation.goBack();
         }} title="Cancel" />
         <Button onPress={() => {
+          const eventParsed = { ...event, timeStart: CopyEventTime(event.timeStart), timeEnd: CopyEventTime(event.timeEnd) };
+
           // make sure event is still valid
-          if (event.timeStart.day !== (new Date()).getDay() || event.timeEnd.timeLessThanDate(new Date())) {
-            // TODO: alert, event is no longer valid
+          if (event.timeStart.day !== (new Date()).getDay() || eventParsed.timeEnd.timeLessThanDate(new Date())) {
+            Alert.alert("Event is no longer valid");
             return;
           }
 
           console.log("Reminder: event is now active");
-          setCurrentEvent(event);
-          ToStorage(CurrentEventKey, event);
+          setCurrentEvent(eventParsed);
+          ToStorage(CurrentEventKey, eventParsed);
 
           const events = FilterIndex(todayEvents.events, 0);
           const newToday = { ...todayEvents, events };

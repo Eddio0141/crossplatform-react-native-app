@@ -53,7 +53,7 @@ export default function Activity() {
       >
         {
           () => (
-            <Text style={{ fontSize: 35, flex: 0.3, color: timeLeft > duration ? "lightgrey" : "black" }}>
+            <Text style={{ fontSize: 30, flex: 0.3, color: timeLeft > duration ? "lightgrey" : "black" }}>
               {Math.floor(timeLeftSeconds / 60)}:{Math.floor(timeLeftSeconds % 60).toString().padStart(2, '0')}
             </Text>
           )

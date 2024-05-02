@@ -1,4 +1,4 @@
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, Alert } from "react-native";
 import SharedStyle from "../Style";
 import MapView, { Marker } from "react-native-maps";
 import { useState, useEffect, useContext } from "react";
@@ -23,15 +23,25 @@ export default function EventLocation({ navigation }) {
 
   useEffect(() => {
     (async () => {
-      let location = await Location.getCurrentPositionAsync({});
+      const { perms } = Location.getForegroundPermissionsAsync();
+      if (perms !== "granted") {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          Alert.alert("Permission required", "Please enable location services to use this feature.");
+          navigation.goBack();
+          return;
+        }
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
 
       const { latitude, longitude } = location.coords;
 
-      setCurrentLocationMarker({ latitude, longitude });
       if (initialLat === undefined) {
         setInitialLat(latitude);
         setInitialLon(longitude);
       }
+      setCurrentLocationMarker({ latitude, longitude });
     })();
   });
 

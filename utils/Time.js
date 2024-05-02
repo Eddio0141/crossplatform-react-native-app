@@ -13,4 +13,10 @@ function DaysInMonth(date) {
   return date.getDate();
 }
 
-export { FormatTime, DateEqualsWithoutTime, DaysInMonth };
+function FormatMinutes(minutes, shorthand = false) {
+  const postfixS = minutes === 1 ? "" : "s";
+  const postfix = shorthand ? "min" : "minute";
+  return `${minutes} ${postfix}${postfixS}`
+}
+
+export { FormatTime, DateEqualsWithoutTime, DaysInMonth, FormatMinutes };

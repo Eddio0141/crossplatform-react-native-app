@@ -12,14 +12,15 @@ import { StepsTodayKey, CaloriesTodayKey } from "../consts/Storage";
 import { CentimeterToFeet, KgToPound } from "../consts/MetricConversion";
 import { ToStorage } from "../utils/Storage";
 import { OpenMaps } from "../utils/External";
+import { AddItemToCalendarStorage } from "../store/Calendar";
 
 function SummaryBar() {
-  const [renderSteps, setRenderSteps] = useState(false);
-
   const { weightMetric, heightMetric, weightKg, heightCm, exercise, calories, steps, setSteps, setCalories } = useContext(SharedContext);
 
-  if (steps === undefined) {
-    (async () => {
+  useEffect(() => {
+    if (steps !== undefined) return;
+
+    const stepWatch = async () => {
       // only render steps if pedometer is available
       const available = await Pedometer.isAvailableAsync();
       if (!available) {
@@ -39,8 +40,6 @@ function SummaryBar() {
 
       console.log("Pedometer is available");
 
-      setRenderSteps(true);
-
       try {
         const stepsTodayData = await AsyncStorage.getItem(StepsTodayKey);
         if (stepsTodayData !== null) {
@@ -52,15 +51,10 @@ function SummaryBar() {
         console.error(`Error getting steps: ${e}`);
         setSteps(0);
       }
-    })();
-  }
 
-  // update steps
-  useEffect(() => {
-    if (!renderSteps) return;
+      console.log("Ready to watch steps");
 
-    const stepWatch = async () =>
-      Pedometer.watchStepCount(result => {
+      return Pedometer.watchStepCount(result => {
         setSteps(result.steps);
         // to storage
         AsyncStorage.setItem(StepsTodayKey, result.steps.toString());
@@ -83,19 +77,26 @@ function SummaryBar() {
 
         setCalories(totalCalories);
         ToStorage(CaloriesTodayKey, totalCalories);
-      });
 
+        AddItemToCalendarStorage(new Date(), "calories", caloriesBurnt);
+        AddItemToCalendarStorage(new Date(), "steps", result.steps);
+      });
+    };
+
+    console.log("Starting step watch");
     const subscription = stepWatch();
 
-    return () => subscription.then(r => r.remove());
-  }, [renderSteps]);
+    if (subscription?.remove === undefined) return;
+
+    return () => subscription && subscription.remove();
+  });
 
   return (
     <View style={styles.summaryBar}>
       <Text style={styles.summaryText}>🔥 {Math.round(calories)} calories burnt</Text>
       <Text style={styles.summaryText}>🕖 {exercise} mins of exercise</Text>
       {
-        renderSteps ? <Text style={styles.summaryText}>🚶 {steps} steps</Text> : null
+        steps === undefined ? null : (<Text style={styles.summaryText}>🚶 {steps} steps</Text>)
       }
     </View>
   );

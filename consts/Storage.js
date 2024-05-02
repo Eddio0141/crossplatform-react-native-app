@@ -12,8 +12,16 @@ const HeightMetricKey = "heightMetric";
 const ExerciseTodayKey = "exercise-today";
 const CaloriesTodayKey = "calories-today";
 
+const CalendarKeyPrefix = "calendar-";
+const CalendarCaloriesKey = "calories";
+const CalendarStepsKey = "steps";
+const CalendarExerciseKey = "exercise";
+const CalendarEventsKey = "events";
+
 export {
   WeightKey, HeightKey, WeightMetricKey, HeightMetricKey,
   EventsKey, CurrentEventKey, StepsTodayKey, WelcomedKey,
-  TodayEventsKey, ExerciseTodayKey, CaloriesTodayKey
+  TodayEventsKey, ExerciseTodayKey, CaloriesTodayKey,
+  CalendarKeyPrefix, CalendarCaloriesKey, CalendarStepsKey,
+  CalendarExerciseKey, CalendarEventsKey
 };

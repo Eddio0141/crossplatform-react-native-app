@@ -15,7 +15,7 @@ import { FromStorage } from "./utils/Storage";
 import { UpdateTodayEvents, LoadEventsFromStorage } from "./store/TodayEvents";
 import { FilterIndex } from "./utils/Array";
 import * as Notifications from "expo-notifications";
-import { CurrentEventKey, WelcomedKey, EventsKey, ExerciseTodayKey, CaloriesTodayKey } from "./consts/Storage";
+import { CurrentEventKey, WelcomedKey, EventsKey, ExerciseTodayKey, CaloriesTodayKey, CalendarCaloriesKey, CalendarEventsKey } from "./consts/Storage";
 import { CopyEventTime } from "./models/Event";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ManageActivities from "./screens/ManageActivities";
@@ -28,7 +28,9 @@ import { ToStorage } from "./utils/Storage";
 import EventSetup from "./screens/EventSetup";
 import EventTime from "./screens/EventTime";
 import EventLocation from "./screens/EventLocation";
-import { KgToPound } from "./consts/MetricConversion";
+import { AddItemToCalendarStorage, AppendItemToCalendarStorage } from "./store/Calendar";
+import { CalcBurntCaloriesFromActivity } from "./utils/ExerciseCalc";
+import { WeightToKg } from "./utils/ExerciseCalc";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -187,33 +189,18 @@ export default function App() {
 
         // calculate calories burnt
         let caloriesBurnt = 0;
-        let weightKgActual;
-        if (weightMetric === "kg") {
-          weightKgActual = weightKg;
-        } else {
-          weightKgActual = weightKg / KgToPound;
-        }
-        if (currentEvent.activity === "Jogging") {
-          // https://captaincalculator.com/health/calorie/calories-burned-jogging-calculator/
-          const met = 7;
-          caloriesBurnt = (met * weightKgActual) / 200 * currentEvent.duration;
-        } else if (currentEvent.activity === "Swimming") {
-          // https://www.omnicalculator.com/sports/swimming-calorie
-          // assuming side stroke (7 MET)
-          const met = 7;
-          caloriesBurnt = (met * weightKgActual * 3.5) / 200 * currentEvent.duration;
-        } else if (currentEvent.activity === "Cycling") {
-          // https://www.omnicalculator.com/sports/calories-burned-biking
-          // average 8 to 8.5 MET
-          const met = 8;
-          caloriesBurnt = currentEvent.duration * met * 3.5 * weightKgActual / 200;
-        }
+        const weightKgActual = WeightToKg(weightKg, weightMetric);
 
+        caloriesBurnt = CalcBurntCaloriesFromActivity(currentEvent.activity, weightKgActual, currentEvent.duration);
         const totalCalories = calories + caloriesBurnt;
         setCalories(totalCalories);
         ToStorage(CaloriesTodayKey, totalCalories);
-
         ToStorage(ExerciseTodayKey, totalExercise);
+
+        // update calendar entry
+        AddItemToCalendarStorage(today, CalendarCaloriesKey, caloriesBurnt);
+        AppendItemToCalendarStorage(today, CalendarEventsKey, currentEvent);
+
         setCurrentEvent(null);
         // remove current event from storage
         AsyncStorage.removeItem(CurrentEventKey).then();

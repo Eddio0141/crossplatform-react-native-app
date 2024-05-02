@@ -4,7 +4,7 @@ import { Calendar } from "react-native-calendars";
 import { useEffect, useState, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DaysInMonth } from "../utils/Time";
-import { CalendarKeyPrefix, CalendarCaloriesKey, CalendarStepsKey, CalendarExerciseKey, CalendarEventsKey } from "../consts/Storage";
+import { CalendarKeyPrefix } from "../consts/Storage";
 import { FormatTime, FormatMinutes } from "../utils/Time";
 import { Feather } from "@expo/vector-icons";
 import { CalcBurntCaloriesFromActivity, WeightToKg } from "../utils/ExerciseCalc";
@@ -18,12 +18,12 @@ export default function CalendarView({ navigation }) {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
   const [weightActual, setWeightActual] = useState(0);
-  const { weight, weightMetric } = useContext(SharedContext);
+  const { weightKg, weightMetric } = useContext(SharedContext);
 
   useEffect(() => {
-    if (weight === undefined) return;
-    setWeightActual(WeightToKg(weight, weightMetric));
-  }, [weight, weightMetric]);
+    if (weightKg === undefined) return;
+    setWeightActual(WeightToKg(weightKg, weightMetric));
+  }, [weightKg, weightMetric]);
 
   // TODO: redo when month changes
   useEffect(() => {
@@ -92,6 +92,8 @@ function CalendarFocus({ route }) {
   // - events (array of event entries)
 
   const { calories, steps, exercise, events } = data;
+
+  console.log(weightActual);
 
   return (
     <View style={SharedStyle.container}>

@@ -1,44 +1,49 @@
 {
-        "expo": {
-                "name": "crossplatform-assignment-2",
-                "slug": "crossplatform-assignment-2",
-                "version": "1.0.0",
-                "orientation": "portrait",
-                "icon": "./assets/icon.png",
-                "userInterfaceStyle": "light",
-                "splash": {
-                        "image": "./assets/splash.png",
-                        "resizeMode": "contain",
-                        "backgroundColor": "#ffffff"
-                },
-                "assetBundlePatterns": [
-                        "**/*"
-                ],
-                "ios": {
-                        "supportsTablet": true
-                },
-                "android": {
-                        "adaptiveIcon": {
-                                "foregroundImage": "./assets/adaptive-icon.png",
-                                "backgroundColor": "#ffffff"
-                        },
-                        "permissions": [
-                                "android.permission.ACTIVITY_RECOGNITION"
-                        ],
-                        "package": "com.edwardcope.crossplatformassignment2",
-                        "config": {
-                                "googleMaps": {
-                                        "apiKey": "AIzaSyB12ss6RS3jUxLIjJZK1sVdHlaNaVOq7Gc"
-                                }
-                        }
-                }
-        },
-        "web": {
-                "favicon": "./assets/favicon.png"
-        },
-        "extra": {
-                "eas": {
-                        "projectId": "d4df0521-5c32-4982-8ada-afca4f8fdd16"
-                }
+  "expo": {
+    "name": "crossplatform-assignment-2",
+    "slug": "crossplatform-assignment-2",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.ACTIVITY_RECOGNITION"
+      ],
+      "package": "com.edwardcope.crossplatformassignment2",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyB12ss6RS3jUxLIjJZK1sVdHlaNaVOq7Gc"
         }
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d4df0521-5c32-4982-8ada-afca4f8fdd16"
+      }
+    }
+  },
+  "web": {
+    "favicon": "./assets/favicon.png"
+  },
+  "extra": {
+    "eas": {
+      "projectId": "d4df0521-5c32-4982-8ada-afca4f8fdd16"
+    }
+  }
 }

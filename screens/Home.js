@@ -16,11 +16,12 @@ import { AddItemToCalendarStorage } from "../store/Calendar";
 
 function SummaryBar() {
   const { weightMetric, heightMetric, weightKg, heightCm, exercise, calories, steps, setSteps, setCalories } = useContext(SharedContext);
+  const [canUsePedometer, setCanUsePedometer] = useState(undefined);
 
   useEffect(() => {
-    if (steps !== undefined) return;
+    if (canUsePedometer !== undefined) return;
 
-    const stepWatch = async () => {
+    (async () => {
       // only render steps if pedometer is available
       const available = await Pedometer.isAvailableAsync();
       if (!available) {
@@ -38,12 +39,19 @@ function SummaryBar() {
         console.log(`Error requesting pedometer permissions: ${e}`);
       }
 
-      console.log("Pedometer is available");
+      setCanUsePedometer(true);
+    })();
+  });
 
+  useEffect(() => {
+    if (canUsePedometer === undefined || !canUsePedometer) return;
+    console.log("Pedometer is available");
+
+    const stepWatch = async () => {
       try {
         const stepsTodayData = await AsyncStorage.getItem(StepsTodayKey);
         if (stepsTodayData !== null) {
-          setSteps(stepsTodayData);
+          setSteps(JSON.parse(stepsTodayData));
         } else {
           setSteps(0);
         }
@@ -54,10 +62,13 @@ function SummaryBar() {
 
       console.log("Ready to watch steps");
 
-      return Pedometer.watchStepCount(result => {
-        setSteps(result.steps);
+      return Pedometer.watchStepCount((result) => {
+        console.log(`Steps: ${result.steps}`);
+
+        const total = steps + result.steps;
+        setSteps(total);
         // to storage
-        AsyncStorage.setItem(StepsTodayKey, result.steps.toString());
+        AsyncStorage.setItem(StepsTodayKey, total.toString()).then();
 
         // https://www.omnicalculator.com/sports/steps-to-calories
         // - MET values
@@ -73,6 +84,7 @@ function SummaryBar() {
         const time = result.steps * stride;
 
         const caloriesBurnt = time * met * 3.5 * weight / 12000;
+        console.log(`Calories burnt: ${caloriesBurnt}`);
         const totalCalories = calories + caloriesBurnt;
 
         setCalories(totalCalories);
@@ -86,10 +98,8 @@ function SummaryBar() {
     console.log("Starting step watch");
     const subscription = stepWatch();
 
-    if (subscription?.remove === undefined) return;
-
-    return () => subscription && subscription.remove();
-  });
+    return () => subscription.then((e) => e.remove());
+  }, [canUsePedometer]);
 
   return (
     <View style={styles.summaryBar}>

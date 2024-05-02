@@ -27,8 +27,6 @@ export default function EventLocation({ navigation }) {
 
       const { latitude, longitude } = location.coords;
 
-      console.log(`Current location: lat: ${latitude}, lon: ${longitude}`);
-
       setCurrentLocationMarker({ latitude, longitude });
       if (initialLat === undefined) {
         setInitialLat(latitude);
